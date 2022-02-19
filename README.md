@@ -1,2 +1,2 @@
-# study-network-backend
-The backend for the study network
+# study-network
+The backend + frontend for the study network
