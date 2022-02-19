@@ -96,10 +96,3 @@ app.get(
 // post routes (testing only - will be removed in the near future)
 
 
-// create a basic GET route
-app.get("/backend_server", (req, res) => {
-  res.send({ express: "Hello World from backend server..." });
-});
-
-
-
