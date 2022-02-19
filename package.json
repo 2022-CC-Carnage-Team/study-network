@@ -1,0 +1,23 @@
+{
+  "name": "study-network-backend",
+  "version": "1.0.0",
+  "description": "The backend for study-network",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2022-CC-Carnage-Team/study-network-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/2022-CC-Carnage-Team/study-network-backend/issues"
+  },
+  "homepage": "https://github.com/2022-CC-Carnage-Team/study-network-backend#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
