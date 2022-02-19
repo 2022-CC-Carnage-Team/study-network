@@ -54,9 +54,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const userRouter = require("./routes/user_routes");
+const postRouter = require("./routes/post_routes");
 
 // user related routes
 app.use("/users", userRouter);
+// post related routes
+app.use("/posts", postRouter);
 
 // This displays message that the server running and listening to specified port
 app.listen(port, () => console.log(`Listening on port ${port}`));
@@ -89,3 +92,14 @@ app.get(
     res.redirect(process.env.WEBAPP_URL + "/profile");
   }
 );
+
+// post routes (testing only - will be removed in the near future)
+
+
+// create a basic GET route
+app.get("/backend_server", (req, res) => {
+  res.send({ express: "Hello World from backend server..." });
+});
+
+
+

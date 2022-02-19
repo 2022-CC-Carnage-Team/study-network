@@ -23,6 +23,7 @@
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
+    "dotnet": "^1.1.4",
     "express": "^4.17.3",
     "express-session": "^1.17.2",
     "jsonwebtoken": "^8.5.1",
@@ -31,5 +32,6 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
     "path": "^0.12.7"
+    "uuid": "^8.3.2"
   }
 }
