@@ -23,7 +23,7 @@ const whitelist = process.env.WEBAPP_URL ? [process.env.WEBAPP_URL] : [];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || whitelist.indexOf(origin) !== -1) {
+    if (!origin || true) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
