@@ -6,19 +6,21 @@ const {
 const recordRoutes = express.Router();
 const post = require('../models/post');
 
-
-recordRoutes.route("/posts").get(async function(req, res) {
+/* Broken
+recordRoutes.route("/").get(async function(req, res) {
     const filter = {};
     const all = await post.find(filter);
-    all.toArray(function(err, result) {
+    all.toString(function(err, result) {
+    //all.toArray(function(err, result) {
         if(err) {
             res.status(400).send("Error fetching posts");
         } else {
-            res.json(result);
+            res.status(200).send(json(result));
         }
     });
 });
-recordRoutes.route("/posts/upload").post(function (req, res) {
+*/
+recordRoutes.route("/upload").post(function (req, res) {
     const doc = {
         id: uuidv4(),
         title: req.body.title,
@@ -35,10 +37,11 @@ recordRoutes.route("/posts/upload").post(function (req, res) {
     post.create(doc, function (error, result) 
          {
             if(error) {
+                console.log("Error uploading new post");
                 res.status(400).send("Error uploading new post");
             } else {
                 console.log(`Added a new post with id  ${doc.id}`);
-                res.status(204).send();
+                res.status(204).send(`Added a new post with id  ${doc.id}`);
             }
          });
     //post.create(doc);
