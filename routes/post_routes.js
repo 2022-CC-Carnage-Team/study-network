@@ -6,23 +6,20 @@ const {
 const recordRoutes = express.Router();
 const post = require('../models/post');
 
-/* Broken
-recordRoutes.route("/").get(async function(req, res) {
-    const filter = {};
-    const all = await post.find(filter);
-    all.toString(function(err, result) {
-    //all.toArray(function(err, result) {
+recordRoutes.route("/").get(function(req, res) {
+    post.findOne().sort({createdAt : -1}).limit(5).exec(function(err, posts) {
         if(err) {
-            res.status(400).send("Error fetching posts");
+            res.status(400).send("Error retrieving posts");
         } else {
-            res.status(200).send(json(result));
+            res.status(200).send(posts)
         }
     });
 });
-*/
+
 recordRoutes.route("/upload").post(function (req, res) {
     const doc = {
-        id: uuidv4(),
+        post_id: uuidv4(),
+        author_id: req.body.author_id,
         title: req.body.title,
         description: req.body.description,
         // times will need to be converted from string to date?
@@ -44,11 +41,36 @@ recordRoutes.route("/upload").post(function (req, res) {
                 res.status(204).send(`Added a new post with id  ${doc.id}`);
             }
          });
-    //post.create(doc);
 });
-recordRoutes.route("/changeLike").post(function (req, res) {
+
+// untested - not sure this works
+recordRoutes.route("/changelike").post(function (req, res) {
     // 1 to add like, 0 to remove like
-    const filter 
+    post.findOne({post_id: req.body.post_id, author_id: req.body.author_id}, function(err, modPost) {
+        if(req.body.changeLike == 1) {
+            modPost.likes += 1;
+            modPost.save(function(err) {
+            });
+            res.status(204).send(`Added a like to post`)
+        } else if(req.body.changeLike == 0) {
+            modPost.likes -= 1;
+            modPost.save(function(err) {
+            });
+            res.status(204).send(`Removed a like from post`)
+        } else {
+            res.status(400).send(`Failed to change like on post with id`);
+        }
+    });
+});
+// untested - not sure this works
+recordRoutes.route("/delete").post(function (req, res) {
+    /*
+    const filter = {
+        post_id = req.body.post_id,
+        author_id = req.body.author_id,
+    };
+    */
+    post.deleteOne({post_id: req.body.post_id}, function(err, delPost) {});
 });
 
 module.exports = recordRoutes;

@@ -3,7 +3,11 @@ const internal = require("stream");
 const Schema = mongoose.Schema;
 
 const Post = new Schema({
-    id: {
+    post_id: {
+        type: String,
+        default: "",
+    },
+    author_id: {
         type: String,
         default: "",
     },
