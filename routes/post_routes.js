@@ -7,14 +7,25 @@ const recordRoutes = express.Router();
 const post = require('../models/post');
 
 recordRoutes.route("/").get(function(req, res) {
-    post.findOne().sort({createdAt : -1}).limit(5).exec(function(err, posts) {
+    post.find().sort({createdAt : -1}).limit(5).exec(function(err, posts) {
         if(err) {
             res.status(400).send("Error retrieving posts");
         } else {
-            res.status(200).send(posts)
+            res.status(200).send(posts);
         }
     });
 });
+
+recordRoutes.route("/fetch").post(function(req, res) {
+    post.findOne({post_id: req.body.post_id}, function(err, findPost) {
+        if(err) {
+            res.status(400).send(`Error finding post`);
+        } else {
+            res.status(200).send(findPost);
+        }
+    });
+});
+
 
 recordRoutes.route("/upload").post(function (req, res) {
     const doc = {
@@ -37,7 +48,11 @@ recordRoutes.route("/upload").post(function (req, res) {
                 console.log("Error uploading new post");
                 res.status(400).send("Error uploading new post");
             } else {
-                console.log(`Added a new post with id  ${doc.id}`);
+                //console.log(`Added a new post with id  ${doc.id}`);
+                console.log(`likes  ${doc.likes}`);
+                console.log(`post_id ${doc.post_id}`);
+                console.log(`author_d ${doc.author_id}`);
+                console.log(`coordinates ${doc.coordinates}`);
                 res.status(204).send(`Added a new post with id  ${doc.id}`);
             }
          });
@@ -62,7 +77,6 @@ recordRoutes.route("/changelike").post(function (req, res) {
         }
     });
 });
-// untested - not sure this works
 recordRoutes.route("/delete").post(function (req, res) {
     /*
     const filter = {
@@ -70,7 +84,13 @@ recordRoutes.route("/delete").post(function (req, res) {
         author_id = req.body.author_id,
     };
     */
-    post.deleteOne({post_id: req.body.post_id}, function(err, delPost) {});
+    post.deleteOne({post_id: req.body.post_id}, function(err, delPost) {
+        if(err) {
+            res.status(400).send(`Error deleting post`);
+        } else {
+            res.status(200).send(delPost);
+        }
+    });
 });
 
 module.exports = recordRoutes;
