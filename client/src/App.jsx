@@ -13,12 +13,16 @@ import { SNAppBar } from "./SNAppBar";
 
 export const theme = createTheme({
   typography: {
+    fontFamily: "Fira Sans",
     allVariants: {
       color: "white",
     },
+    button: {
+      fontSize: "1.2rem",
+    },
   },
   palette: {
-    type: "dark",
+    mode: "dark",
     primary: {
       main: "#A60F2D",
     },

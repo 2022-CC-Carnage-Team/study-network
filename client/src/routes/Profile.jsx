@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import { Routes, Route, Link } from "react-router-dom";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import { Paper, Card, CardHeader, CardMedia, IconButton } from "@mui/material";
 
 class Profile extends Component {
   state = {
@@ -28,17 +31,28 @@ class Profile extends Component {
 
   render() {
     return (
-      <div>
-        <h1>Profile</h1>
+      <Container maxWidth="lg">
         {this.state.data ? (
-          <div>
-            <p>{this.state.data.firstName}</p>
-            <p>{this.state.data.email}</p>
-          </div>
+          <Paper className="page-container">
+            <Typography variant="h4" component="h4" gutterBottom>
+              Profile
+            </Typography>
+            <Card className="secondary-card">
+              <CardHeader
+                title={`${this.state.data.firstName} ${this.state.data.lastName}`}
+                subheader={this.state.data.google.email}
+              />
+              <CardMedia className="profile-image" title="Profile Image" />
+            </Card>
+          </Paper>
         ) : (
-          <div>Loading...</div>
+          <Paper className="page-container">
+            <Typography variant="h5" align="center" component="h5" gutterBottom>
+              Loading...
+            </Typography>
+          </Paper>
         )}
-      </div>
+      </Container>
     );
   }
 }

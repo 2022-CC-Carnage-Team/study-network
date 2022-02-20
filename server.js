@@ -67,11 +67,6 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 // direct the default route to the static folder client/build
 app.use(express.static(path.join(__dirname, "client/build")));
 
-// handles react routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/build/index.html"));
-});
-
 // auth routes
 app.get("/auth/google/failure", (req, res) => {
   res.send("Authentication failed");
@@ -95,4 +90,7 @@ app.get(
 
 // post routes (testing only - will be removed in the near future)
 
-
+// handles react routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});

@@ -20,7 +20,7 @@ class PostCard extends Component {
 
   render() {
     return (
-      <Card variant="outlined" className="post-card">
+      <Card variant="outlined" className="secondary-card">
         <CardContent>
           <Typography variant="h5" component="h2">
             Post Title
