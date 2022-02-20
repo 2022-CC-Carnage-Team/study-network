@@ -46,5 +46,9 @@ recordRoutes.route("/upload").post(function (req, res) {
          });
     //post.create(doc);
 });
+recordRoutes.route("/changeLike").post(function (req, res) {
+    // 1 to add like, 0 to remove like
+    const filter 
+});
 
 module.exports = recordRoutes;
