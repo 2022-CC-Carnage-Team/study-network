@@ -62,6 +62,7 @@ recordRoutes.route("/upload").post(function (req, res) {
     updatedAt: req.body.updatedAt,
     likes: req.body.likes,
     coordinates: req.body.coordinates,
+    timeStudying: req.body.timeStudying,
     // need to implement test cases for if wrong format is inputted to prevent DB issues
   };
   post.create(doc, function (error, result) {
@@ -74,6 +75,7 @@ recordRoutes.route("/upload").post(function (req, res) {
       console.log(`post_id ${doc.post_id}`);
       console.log(`author_d ${doc.author_id}`);
       console.log(`coordinates ${doc.coordinates}`);
+      console.log(`time on assignment: ${doc.timeStudying}`);
       res.status(204).send(`Added a new post with id  ${doc.id}`);
     }
   });
@@ -116,5 +118,24 @@ recordRoutes.route("/delete").post(function (req, res) {
     }
   });
 });
+recordRoutes.route("/time_studying").get(function (req, res) {
+    var totalAssignmentTime = 0;
+    post
+    .find()
+    .exec(async function (err, posts) {
+      if (err) {
+        res.status(400).send("Error retrieving posts");
+      } else {
+        // loop through posts and get the user data for each post
+        let postArr = [];
+        for (let post of posts) {
+            // need error checking here for when this field DNE
+            totalAssignmentTime += post.timeStudying;
+        }
+        console.log(`total Assignment time: ${totalAssignmentTime}`);
+        res.status(200).send();
+      }
+    });
+})
 
 module.exports = recordRoutes;
