@@ -3,7 +3,7 @@ import { Routes, Route, Link } from "react-router-dom";
 
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import { Paper } from "@mui/material";
+import { Paper, Grid, Button } from "@mui/material";
 
 import { PostCard } from "./Posts";
 
@@ -45,9 +45,21 @@ class Home extends Component {
         <Paper className="page-container">
           {this.state.recentPosts ? (
             <div>
-              <Typography variant="h4" component="h4" gutterBottom>
-                Recent Posts
-              </Typography>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-end"
+              >
+                <Grid item xs>
+                  <Typography variant="h4" component="h4" gutterBottom>
+                    Recent Posts
+                  </Typography>
+                </Grid>
+                <Link to="/post" className="no-link-style">
+                  <Button variant="contained">New Post</Button>
+                </Link>
+              </Grid>
               {this.state.recentPosts.map((post) => (
                 <PostCard author={post.author} contents={post.post} />
               ))}

@@ -35,6 +35,14 @@ const Post = new Schema({
     type: Date,
     default: Date.now,
   },
+  difficulty: {
+    type: Number,
+    default: 0,
+  },
+  class: {
+    type: String,
+    default: "",
+  },
   likes: {
     type: Number,
     default: 0,

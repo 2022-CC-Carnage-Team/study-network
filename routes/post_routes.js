@@ -87,16 +87,24 @@ recordRoutes.route("/changelike").post(function (req, res) {
       if (req.body.change_like == 1) {
         modPost.likes += 1;
         modPost.save(function (err) {});
-        console.log(`Failed to change like on post with id ${req.body.post_id}`);
+        console.log(
+          `Failed to change like on post with id ${req.body.post_id}`
+        );
         res.status(204).send(`Added a like to post ${req.body.post_id}`);
       } else if (req.body.change_like == 0) {
         modPost.likes -= 1;
         modPost.save(function (err) {});
-        console.log(`Failed to change like on post with id ${req.body.post_id}`);
+        console.log(
+          `Failed to change like on post with id ${req.body.post_id}`
+        );
         res.status(204).send(`Removed a like from post ${req.body.post_id}`);
       } else {
-        console.log(`Failed to change like on post with id ${req.body.post_id}`);
-        res.status(400).send(`Failed to change like on post with id ${req.body.post_id}`);
+        console.log(
+          `Failed to change like on post with id ${req.body.post_id}`
+        );
+        res
+          .status(400)
+          .send(`Failed to change like on post with id ${req.body.post_id}`);
       }
     }
   );

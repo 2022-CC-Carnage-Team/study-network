@@ -78,6 +78,11 @@ class App extends Component {
             <Route path="post" element={<NewPost user={this.state.data} />} />
           </Routes>
         </div>
+        <footer className="footer">
+          <p className="copyright">
+            Copyright © {new Date().getFullYear()} Team Carnage
+          </p>
+        </footer>
       </ThemeProvider>
     );
   }

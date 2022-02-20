@@ -11,12 +11,18 @@ html {
   background-size: calc(max(100%, 1000px));
 }
 
+body {
+  min-height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+}
+
 .app-bar-container {
   border-radius: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   /* wsu color bg */
-  background-color: #a60f2d !important;
+  background-color: #ca123796 !important;
 }
 
 .page-container {
@@ -63,4 +69,33 @@ h6 {
 
 .liked {
   color: #ff3961 !important;
+}
+
+.footer {
+  width: 100%;
+  margin-bottom: 0;
+  margin-top: auto;
+}
+
+.copyright {
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #353535;
+  z-index: 1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #494949;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ca1237;
 }
