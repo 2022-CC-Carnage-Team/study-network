@@ -1,5 +1,4 @@
 const passport = require("passport");
-const jwt = require("jsonwebtoken");
 const dev = process.env.NODE_ENV !== "production";
 
 module.exports = {

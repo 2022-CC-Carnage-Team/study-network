@@ -1,0 +1,32 @@
+.no-link-style {
+  color: inherit;
+  text-decoration: none; /* no underline */
+}
+
+body,
+html {
+  background-color: #0e0e0e !important;
+  background-image: url("../public/wsu_pattern.svg") !important;
+  background-position: center !important;
+  background-size: calc(max(100%, 1000px));
+}
+
+.app-bar-container {
+  border-radius: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(179, 0, 36) 0%,
+    rgba(255, 0, 51, 1) 100%
+  ) !important;
+}
+
+.page-container {
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.secondary-card {
+  background-color: #353535 !important;
+}

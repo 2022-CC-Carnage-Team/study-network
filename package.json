@@ -1,7 +1,7 @@
 {
-  "name": "study-network-backend",
+  "name": "study-network",
   "version": "1.0.0",
-  "description": "The backend for study-network",
+  "description": "The package for study-network",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,18 +9,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/2022-CC-Carnage-Team/study-network-backend.git"
+    "url": "git+https://github.com/2022-CC-Carnage-Team/study-network.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/2022-CC-Carnage-Team/study-network-backend/issues"
+    "url": "https://github.com/2022-CC-Carnage-Team/study-network/issues"
   },
-  "homepage": "https://github.com/2022-CC-Carnage-Team/study-network-backend#readme",
+  "homepage": "https://github.com/2022-CC-Carnage-Team/study-network#readme",
   "dependencies": {
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "dotnet": "^1.1.4",
     "express": "^4.17.3",
@@ -29,6 +30,8 @@
     "mongoose": "^6.2.2",
     "passport": "^0.5.2",
     "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.0",
+    "path": "^0.12.7",
     "uuid": "^8.3.2"
   }
 }
