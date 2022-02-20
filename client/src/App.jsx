@@ -41,15 +41,41 @@ export const theme = createTheme({
 });
 
 class App extends Component {
+  state = {
+    data: null,
+  };
+
+  componentDidMount() {
+    this.callBackendAPI()
+      .then((res) => this.setState({ data: res.user }))
+      .catch((err) => console.log(err));
+  }
+
+  // fetching the GET route from the Express server which matches the GET route from server.js
+  callBackendAPI = async () => {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/users/me`
+    );
+    const body = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    return body;
+  };
+
   render() {
     return (
       <ThemeProvider theme={theme}>
-        <SNAppBar />
+        <SNAppBar user={this.state.data} />
         <div className="App">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="post" element={<NewPost />} />
+            <Route path="/" element={<Home user={this.state.data} />} />
+            <Route
+              path="profile"
+              element={<Profile user={this.state.data} />}
+            />
+            <Route path="post" element={<NewPost user={this.state.data} />} />
           </Routes>
         </div>
       </ThemeProvider>

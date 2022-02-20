@@ -7,6 +7,16 @@ import { Paper } from "@mui/material";
 
 import { PostCard } from "./Posts";
 
+const user = {
+  firstName: "Example",
+  lastName: "User",
+  google: {
+    profilePic:
+      "https://pbs.twimg.com/profile_images/1465047742338646019/a54vdnaQ_400x400.jpg",
+    email: "test@example.com",
+  },
+};
+
 class Home extends Component {
   state = {};
 
@@ -17,7 +27,7 @@ class Home extends Component {
           <Typography variant="h4" component="h4" gutterBottom>
             Recent Posts
           </Typography>
-          <PostCard />
+          <PostCard author={user} />
         </Paper>
       </Container>
     );

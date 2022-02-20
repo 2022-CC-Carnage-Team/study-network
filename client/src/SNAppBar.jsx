@@ -7,9 +7,20 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Avatar, Menu, MenuItem } from "@mui/material";
 
 class SNAppBar extends Component {
-  state = {};
+  state = {
+    anchorEl: null,
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
+  handleMenu = (event) => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
 
   render() {
     return (
@@ -26,14 +37,59 @@ class SNAppBar extends Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              WSU Student Network
+              <Link to="/" className="no-link-style">
+                WSU Student Network
+              </Link>
             </Typography>
-            <a
-              className="no-link-style"
-              href={process.env.REACT_APP_API_ENDPOINT + "/auth/google"}
-            >
-              <Button color="inherit">Login</Button>
-            </a>
+            {this.props.user ? (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{ flexGrow: 1, padding: 2 }}
+                >
+                  {this.props.user.firstName} {this.props.user.lastName}
+                </Typography>
+                <IconButton onClick={this.handleMenu} sx={{ p: 0 }}>
+                  <Avatar
+                    alt={this.props.user.firstName}
+                    src={this.props.user.google.profilePic}
+                  />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={this.state.anchorEl}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(this.state.anchorEl)}
+                  onClose={this.handleClose}
+                >
+                  <Link to="/profile" className="no-link-style">
+                    <MenuItem>Profile</MenuItem>
+                  </Link>
+                  <a
+                    href={`${process.env.REACT_APP_API_ENDPOINT}/users/logout`}
+                    className="no-link-style"
+                  >
+                    <MenuItem>Logout</MenuItem>
+                  </a>
+                </Menu>
+              </Box>
+            ) : (
+              <a
+                className="no-link-style"
+                href={process.env.REACT_APP_API_ENDPOINT + "/auth/google"}
+              >
+                <Button color="inherit">Login</Button>
+              </a>
+            )}
           </Toolbar>
         </AppBar>
       </Box>

@@ -27,3 +27,28 @@ html {
 .secondary-card {
   background-color: #353535 !important;
 }
+
+.difficulty-meter {
+  max-width: 25rem;
+  height: 20px !important;
+  border-radius: 10px;
+}
+
+/* add padding-bottom to every h */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding-top: 0.8rem;
+}
+
+.padding-margin {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+}
+
+.top-margin {
+  margin-top: 1rem;
+}

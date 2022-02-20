@@ -11,34 +11,13 @@ import {
   Avatar,
 } from "@mui/material";
 
+import { UserHeatmap } from "./Heatmap";
+
 class Profile extends Component {
-  state = {
-    data: null,
-  };
-
-  componentDidMount() {
-    this.callBackendAPI()
-      .then((res) => this.setState({ data: res.user }))
-      .catch((err) => console.log(err));
-  }
-
-  // fetching the GET route from the Express server which matches the GET route from server.js
-  callBackendAPI = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/users/me`
-    );
-    const body = await response.json();
-
-    if (response.status !== 200) {
-      throw Error(body.message);
-    }
-    return body;
-  };
-
   render() {
     return (
       <Container maxWidth="lg">
-        {this.state.data ? (
+        {this.props.user ? (
           <Paper className="page-container">
             <Typography variant="h4" component="h4" gutterBottom>
               Profile
@@ -47,14 +26,17 @@ class Profile extends Component {
               <CardHeader
                 avatar={
                   <Avatar
-                    alt={this.state.data.firstName}
-                    src={this.state.data.google.profilePic}
+                    alt={this.props.user.firstName}
+                    src={this.props.user.google.profilePic}
                   />
                 }
-                title={`${this.state.data.firstName} ${this.state.data.lastName}`}
-                subheader={this.state.data.google.email}
+                title={`${this.props.user.firstName} ${this.props.user.lastName}`}
+                subheader={this.props.user.google.email}
               />
               <CardMedia className="profile-image" title="Profile Image" />
+            </Card>
+            <Card className="secondary-card padding-margin">
+              <UserHeatmap />
             </Card>
           </Paper>
         ) : (
