@@ -9,6 +9,7 @@ import {
   CardMedia,
   IconButton,
   Avatar,
+  CardContent,
 } from "@mui/material";
 import { Grid, Button } from "@mui/material";
 
@@ -16,20 +17,44 @@ import PostCard from "./Posts";
 
 import { UserHeatmap } from "./Heatmap";
 
+import { formatDuration } from "../utility";
+
 class Profile extends Component {
   state = {
     userPosts: null,
+    stats: {
+      numPosts: 0,
+      numUsers: 0,
+      totalTime: 0,
+      avgTime: 0,
+    },
   };
 
   componentDidMount() {
     this.callBackendAPI()
       .then((res) => this.setState({ userPosts: res }))
       .catch((err) => console.log(err));
+
+    this.getStats()
+      .then((res) => this.setState({ stats: res }))
+      .catch((err) => console.log(err));
   }
 
   callBackendAPI = async () => {
     const response = await fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/posts/userposts`
+    );
+    const body = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    return body;
+  };
+
+  getStats = async () => {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/stats/global`
     );
     const body = await response.json();
 
@@ -63,6 +88,37 @@ class Profile extends Component {
             {/* <Card className="secondary-card padding-margin">
               <UserHeatmap />
             </Card> */}
+            <Typography variant="h4" component="h4">
+              User Study Stats
+            </Typography>
+            <Card variant="outlined" className="secondary-card top-margin">
+              <CardContent>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="left"
+                  alignItems="center"
+                >
+                  <Grid item xs={5}>
+                    <Typography variant="h6" component="h2">
+                      Total Posts: {this.state.stats.numPosts}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={5}>
+                    <Typography variant="h6" component="h2">
+                      Total Study Time:{" "}
+                      {formatDuration(this.state.stats.totalTime)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={5}>
+                    <Typography variant="h6" component="h2">
+                      Average Study Time:{" "}
+                      {formatDuration(this.state.stats.avgTime)}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
             {this.state.userPosts ? (
               <div>
                 <Grid

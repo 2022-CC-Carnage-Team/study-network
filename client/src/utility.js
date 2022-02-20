@@ -16,9 +16,6 @@ module.exports = {
     if (minutes > 0) {
       timeStudying += minutes + " minutes ";
     }
-    if (seconds > 0) {
-      timeStudying += seconds + " seconds ";
-    }
 
     return timeStudying;
   },

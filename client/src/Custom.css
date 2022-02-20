@@ -21,8 +21,6 @@ body {
   border-radius: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  /* wsu color bg */
-  background-color: #ca123796 !important;
 }
 
 .page-container {
@@ -72,7 +70,12 @@ h6 {
 }
 
 .site-title {
-  font-family: "Fredericka the Great", cursive;
+  font-size: 1.5rem !important;
+  font-family: "Oswald", sans-serif !important;
+}
+
+.user-name {
+  font-family: "Oswald", sans-serif !important;
 }
 
 .footer {

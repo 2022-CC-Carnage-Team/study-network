@@ -55,6 +55,15 @@ class NewPost extends Component {
   handleSubmit = (event, newValue) => {
     event.preventDefault();
 
+    if (
+      this.state.title == "" ||
+      this.state.description == "" ||
+      this.state.class == ""
+    ) {
+      alert("Please fill out all fields");
+      return;
+    }
+
     // make post request to server
     fetch(process.env.REACT_APP_API_ENDPOINT + "/posts/upload", {
       method: "POST",
@@ -77,6 +86,15 @@ class NewPost extends Component {
 
   handleSubmitLoc = (event, newValue) => {
     event.preventDefault();
+
+    if (
+      this.state.title == "" ||
+      this.state.description == "" ||
+      this.state.class == ""
+    ) {
+      alert("Please fill out all fields");
+      return;
+    }
 
     if (!this.props.isGeolocationAvailable) {
       alert("Your browser does not support Geolocation");

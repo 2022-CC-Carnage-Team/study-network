@@ -25,9 +25,14 @@ class SNAppBar extends Component {
   render() {
     return (
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" className="app-bar-container">
+        <AppBar
+          color="primary"
+          enableColorOnDark
+          position="static"
+          className="app-bar-container"
+        >
           <Toolbar>
-            <IconButton
+            {/* <IconButton
               size="large"
               edge="start"
               color="inherit"
@@ -35,7 +40,7 @@ class SNAppBar extends Component {
               sx={{ mr: 2 }}
             >
               <MenuIcon />
-            </IconButton>
+            </IconButton> */}
             <Typography
               className="site-title"
               variant="h6"
@@ -43,7 +48,7 @@ class SNAppBar extends Component {
               sx={{ flexGrow: 1 }}
             >
               <Link to="/" className="no-link-style">
-                WSU Study Network
+                Coug Study Network
               </Link>
             </Typography>
             {this.props.user ? (
@@ -52,6 +57,7 @@ class SNAppBar extends Component {
                   <Typography
                     variant="h6"
                     component="div"
+                    className="user-name"
                     sx={{ flexGrow: 1, padding: 2 }}
                   >
                     {this.props.user.firstName} {this.props.user.lastName}

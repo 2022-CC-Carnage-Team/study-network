@@ -13,6 +13,7 @@ import {
   Paper,
   Avatar,
   Grid,
+  Stack,
 } from "@mui/material";
 
 import { formatDuration } from "../utility";
@@ -20,10 +21,13 @@ import { formatDuration } from "../utility";
 // favorite icon
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
+import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 // share icon
 import ShareIcon from "@mui/icons-material/Share";
 
 const Map = ReactMapboxGl({
+  attributionControl: false,
   accessToken:
     "pk.eyJ1IjoibmxhaGEiLCJhIjoiY2s2YnR3aTViMTVkODNqbGpvcmQ4cXNkNSJ9.tv42gtwJFcNy3sjYxrPopg",
 });
@@ -100,13 +104,18 @@ class PostCard extends Component {
               <Typography variant="h6" component="h5">
                 Assignment Difficulty:
               </Typography>
-              <LinearProgress
-                className="difficulty-meter"
-                size={40}
-                thickness={4}
-                variant="determinate"
-                value={this.state.contents.difficulty}
-              />
+              <Stack spacing={2} direction="row" alignItems="center">
+                <SentimentSatisfiedAltIcon />
+                <LinearProgress
+                  className="difficulty-meter"
+                  size={40}
+                  thickness={4}
+                  variant="determinate"
+                  value={this.state.contents.difficulty}
+                  sx={{ minWidth: "50vw" }}
+                />
+                <SentimentVeryDissatisfiedIcon />
+              </Stack>
               <Typography variant="h6" component="h5">
                 Assignment Duration:
               </Typography>
@@ -224,7 +233,7 @@ class PostCard extends Component {
                 <Grid item xs>
                   <Typography className="align-right soft-text">
                     Posted:{" "}
-                    {new Date(this.state.contents.createdAt).toDateString()}
+                    {new Date(this.state.contents.createdAt).toLocaleString()}
                   </Typography>
                 </Grid>
               </Grid>

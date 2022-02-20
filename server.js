@@ -62,12 +62,14 @@ app.use(passport.session());
 
 const userRouter = require("./routes/user_routes");
 const postRouter = require("./routes/post_routes");
-const res = require("express/lib/response");
+const statRouter = require("./routes/stat_routes");
 
 // user related routes
 app.use("/users", userRouter);
 // post related routes
 app.use("/posts", postRouter);
+// statistic related routes
+app.use("/stats", statRouter);
 
 // This displays message that the server running and listening to specified port
 app.listen(port, () => console.log(`Listening on port ${port}`));
