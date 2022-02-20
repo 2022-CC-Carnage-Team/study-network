@@ -19,7 +19,9 @@ module.exports = function (passport) {
             id: profile.id,
             token: accessToken,
             refreshToken: refreshToken,
+            profilePic: profile.photos[0].value,
           },
+          authStratgy: "google",
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
         };

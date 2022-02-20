@@ -2,7 +2,14 @@ import React, { Component } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import { Paper, Card, CardHeader, CardMedia, IconButton } from "@mui/material";
+import {
+  Paper,
+  Card,
+  CardHeader,
+  CardMedia,
+  IconButton,
+  Avatar,
+} from "@mui/material";
 
 class Profile extends Component {
   state = {
@@ -21,7 +28,6 @@ class Profile extends Component {
       `${process.env.REACT_APP_API_ENDPOINT}/users/me`
     );
     const body = await response.json();
-    console.log(body);
 
     if (response.status !== 200) {
       throw Error(body.message);
@@ -39,6 +45,12 @@ class Profile extends Component {
             </Typography>
             <Card className="secondary-card">
               <CardHeader
+                avatar={
+                  <Avatar
+                    alt={this.state.data.firstName}
+                    src={this.state.data.google.profilePic}
+                  />
+                }
                 title={`${this.state.data.firstName} ${this.state.data.lastName}`}
                 subheader={this.state.data.google.email}
               />

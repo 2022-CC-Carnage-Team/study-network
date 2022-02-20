@@ -19,7 +19,7 @@ const User = new Schema({
     id: String,
     token: String,
     refreshToken: String,
-    url: String,
+    profilePic: String,
   },
   createdAt: {
     type: Date,
