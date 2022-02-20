@@ -47,6 +47,10 @@ const Post = new Schema({
     type: Number,
     default: 0,
   },
+  timeStudying: {
+      type: Number,
+      default: 0,
+  },
   coordinates: { type: [Number], default: [0, 0] },
 });
 const POST = mongoose.model("Post", Post, "posts");
