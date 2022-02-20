@@ -142,7 +142,7 @@ recordRoutes.route("/time_studying").get(function (req, res) {
         totalAssignmentTime += post.timeStudying;
       }
       console.log(`total Assignment time: ${totalAssignmentTime}`);
-      res.status(200).send();
+      res.status(200).send(totalAssignmentTime);
     }
   });
 });
