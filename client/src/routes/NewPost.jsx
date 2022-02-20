@@ -29,6 +29,7 @@ class NewPost extends Component {
     description: "",
     class: "",
     timeStudying: 0,
+    success: false,
   };
 
   handleDiffChange = (event, newValue) => {
@@ -69,7 +70,9 @@ class NewPost extends Component {
       }),
     });
 
-    this.props.history.push("/");
+    this.setState({
+      success: true,
+    });
   };
 
   handleSubmitLoc = (event, newValue) => {
@@ -104,113 +107,128 @@ class NewPost extends Component {
       }),
     });
 
-    this.props.history.push("/");
+    this.setState({
+      success: true,
+    });
   };
 
   render() {
     return (
       <Container maxWidth="lg">
         <Paper className="page-container">
-          {this.props.user ? (
-            <Card variant="outlined" className="secondary-card top-margin">
-              <CardContent>
-                <Box
-                  component="form"
-                  sx={{
-                    "& .MuiTextField-root": {
-                      m: 2,
-                      minWidth: "90%",
-                      textAlign: "center",
-                    },
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
-                  <div>
-                    <TextField
-                      required
-                      id="outlined-required"
-                      label="Assignment/Post Title"
-                      value={this.state.title}
-                      onChange={this.handleTitleChange}
-                    />
-                    <TextField
-                      required
-                      id="outlined-required"
-                      label="Class"
-                      value={this.state.class}
-                      onChange={this.handleClassChange}
-                    />
-                    <TextField
-                      multiline
-                      rows={4}
-                      required
-                      id="outlined-required"
-                      label="Assignment Description"
-                      value={this.state.description}
-                      onChange={this.handleDescriptionChange}
-                    />
+          {this.state.success == false ? (
+            this.props.user ? (
+              <Card variant="outlined" className="secondary-card top-margin">
+                <CardContent>
+                  <Box
+                    component="form"
+                    sx={{
+                      "& .MuiTextField-root": {
+                        m: 2,
+                        minWidth: "90%",
+                        textAlign: "center",
+                      },
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
                     <div>
-                      Difficulty: {`${this.state.difficulty}%/100%`}
-                      <Stack
-                        spacing={2}
-                        direction="row"
-                        sx={{ mb: 2, ml: 5, mr: 5 }}
-                        alignItems="center"
-                      >
-                        <SentimentSatisfiedAltIcon />
-                        <Slider
-                          aria-label="difficulty"
-                          value={this.state.difficulty}
-                          onChange={this.handleDiffChange}
-                        />
-                        <SentimentVeryDissatisfiedIcon />
-                      </Stack>
-                      Time Spent: {formatDuration(this.state.timeStudying)}
-                      <Stack
-                        spacing={2}
-                        direction="row"
-                        sx={{ mb: 2, ml: 5, mr: 5 }}
-                        alignItems="center"
-                      >
-                        <BoltIcon />
-                        <Slider
-                          aria-label="timeStudying"
-                          value={this.state.timeStudying}
-                          onChange={this.handleDurChange}
-                          max={86400}
-                          step={300}
-                        />
-                        <AccessTimeIcon />
-                      </Stack>
+                      <TextField
+                        required
+                        id="outlined-required"
+                        label="Assignment/Post Title"
+                        value={this.state.title}
+                        onChange={this.handleTitleChange}
+                      />
+                      <TextField
+                        required
+                        id="outlined-required"
+                        label="Class"
+                        value={this.state.class}
+                        onChange={this.handleClassChange}
+                      />
+                      <TextField
+                        multiline
+                        rows={4}
+                        required
+                        id="outlined-required"
+                        label="Assignment Description"
+                        value={this.state.description}
+                        onChange={this.handleDescriptionChange}
+                      />
+                      <div>
+                        Difficulty: {`${this.state.difficulty}%/100%`}
+                        <Stack
+                          spacing={2}
+                          direction="row"
+                          sx={{ mb: 2, ml: 5, mr: 5 }}
+                          alignItems="center"
+                        >
+                          <SentimentSatisfiedAltIcon />
+                          <Slider
+                            aria-label="difficulty"
+                            value={this.state.difficulty}
+                            onChange={this.handleDiffChange}
+                          />
+                          <SentimentVeryDissatisfiedIcon />
+                        </Stack>
+                        Time Spent: {formatDuration(this.state.timeStudying)}
+                        <Stack
+                          spacing={2}
+                          direction="row"
+                          sx={{ mb: 2, ml: 5, mr: 5 }}
+                          alignItems="center"
+                        >
+                          <BoltIcon />
+                          <Slider
+                            aria-label="timeStudying"
+                            value={this.state.timeStudying}
+                            onChange={this.handleDurChange}
+                            max={86400}
+                            step={300}
+                          />
+                          <AccessTimeIcon />
+                        </Stack>
+                      </div>
                     </div>
-                  </div>
-                  <Button
-                    sx={{ mr: 2 }}
-                    variant="contained"
-                    onClick={this.handleSubmit}
-                  >
-                    Post
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={this.handleSubmitLoc}
-                  >
-                    Post With Location
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
+                    <Button
+                      sx={{ mr: 2 }}
+                      variant="contained"
+                      onClick={this.handleSubmit}
+                    >
+                      Post
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={this.handleSubmitLoc}
+                    >
+                      Post With Location
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            ) : (
+              <div>
+                <Typography variant="h6" component="div">
+                  Please{" "}
+                  <a href={process.env.REACT_APP_API_ENDPOINT + "/auth/google"}>
+                    login
+                  </a>{" "}
+                  to post
+                </Typography>
+              </div>
+            )
           ) : (
             <div>
               <Typography variant="h6" component="div">
-                Please{" "}
-                <a href={process.env.REACT_APP_API_ENDPOINT + "/auth/google"}>
-                  login
-                </a>{" "}
-                to post
+                Post Successful!
               </Typography>
+              <Link to="/" class="no-link-style">
+                <Button variant="contained" color="primary">
+                  Back to Home
+                </Button>
+              </Link>
             </div>
           )}
         </Paper>

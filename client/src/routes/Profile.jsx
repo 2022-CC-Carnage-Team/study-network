@@ -10,10 +10,35 @@ import {
   IconButton,
   Avatar,
 } from "@mui/material";
+import { Grid, Button } from "@mui/material";
+
+import PostCard from "./Posts";
 
 import { UserHeatmap } from "./Heatmap";
 
 class Profile extends Component {
+  state = {
+    userPosts: null,
+  };
+
+  componentDidMount() {
+    this.callBackendAPI()
+      .then((res) => this.setState({ userPosts: res }))
+      .catch((err) => console.log(err));
+  }
+
+  callBackendAPI = async () => {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/posts/userposts`
+    );
+    const body = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    return body;
+  };
+
   render() {
     return (
       <Container maxWidth="lg">
@@ -35,9 +60,44 @@ class Profile extends Component {
               />
               <CardMedia className="profile-image" title="Profile Image" />
             </Card>
-            <Card className="secondary-card padding-margin">
+            {/* <Card className="secondary-card padding-margin">
               <UserHeatmap />
-            </Card>
+            </Card> */}
+            {this.state.userPosts ? (
+              <div>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="flex-end"
+                >
+                  <Grid item xs>
+                    <Typography variant="h4" component="h4" gutterBottom>
+                      Posts
+                    </Typography>
+                  </Grid>
+                  <Link to="/post" className="no-link-style">
+                    <Button variant="contained">New Post</Button>
+                  </Link>
+                </Grid>
+                {this.state.userPosts.map((post) => (
+                  <PostCard
+                    owned={true}
+                    author={post.author}
+                    contents={post.post}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Typography
+                variant="h5"
+                align="center"
+                component="h5"
+                gutterBottom
+              >
+                No posts yet!
+              </Typography>
+            )}
           </Paper>
         ) : (
           <Paper className="page-container">

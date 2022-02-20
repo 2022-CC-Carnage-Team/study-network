@@ -52,6 +52,30 @@ recordRoutes.route("/fetch").post(function (req, res) {
   });
 });
 
+recordRoutes.route("/userposts").get(ensureAuth, function (req, res) {
+  post
+    .find({ author_id: req.user.google.id })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .exec(async function (err, posts) {
+      if (err) {
+        res.status(400).send("Error retrieving posts");
+      } else {
+        // loop through posts and get the user data for each post
+        let postArr = [];
+        for (let post of posts) {
+          let resUser = await user.findOne({ "google.id": post.author_id });
+          postArr.push({
+            post: post,
+            author: resUser,
+          });
+        }
+
+        res.status(200).send(postArr);
+      }
+    });
+});
+
 recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
   const doc = {
     post_id: uuidv4(),
@@ -66,6 +90,8 @@ recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
     likes: req.body.likes,
     coordinates: req.body.coordinates,
     timeStudying: req.body.timeStudying,
+    difficulty: req.body.difficulty,
+    class: req.body.class,
     // need to implement test cases for if wrong format is inputted to prevent DB issues
   };
   post.create(doc, function (error, result) {
@@ -86,9 +112,8 @@ recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
 
 recordRoutes.route("/changelike").post(function (req, res) {
   // 1 to add like, 0 to remove like
-  post.findOne(
-    { post_id: req.body.post_id, author_id: req.body.author_id },
-    function (err, modPost) {
+  post.findOne({ post_id: req.body.post_id }, function (err, modPost) {
+    if (!err) {
       if (req.body.change_like == 1) {
         modPost.likes += 1;
         modPost.save(function (err) {});
@@ -112,20 +137,22 @@ recordRoutes.route("/changelike").post(function (req, res) {
           .send(`Failed to change like on post with id ${req.body.post_id}`);
       }
     }
-  );
+  });
 });
-recordRoutes.route("/delete").post(function (req, res) {
-  /*
-    const filter = {
-        post_id = req.body.post_id,
-        author_id = req.body.author_id,
-    };
-    */
-  post.deleteOne({ post_id: req.body.post_id }, function (err, delPost) {
-    if (err) {
-      res.status(400).send(`Error deleting post`);
-    } else {
-      res.status(200).send(delPost);
+recordRoutes.route("/delete").post(ensureAuth, function (req, res) {
+  post.findOne({ post_id: req.body.post_id }, function (err, modPost) {
+    if (!err) {
+      if (modPost.author_id == req.user.google.id) {
+        post.deleteOne({ post_id: req.body.post_id }, function (err, delPost) {
+          if (err) {
+            res.status(400).send(`Error deleting post`);
+          } else {
+            res.status(200).send(delPost);
+          }
+        });
+      } else {
+        res.status(400).send(`You are not the author of this post`);
+      }
     }
   });
 });

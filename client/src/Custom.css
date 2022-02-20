@@ -71,6 +71,10 @@ h6 {
   color: #ff3961 !important;
 }
 
+.site-title {
+  font-family: "Fredericka the Great", cursive;
+}
+
 .footer {
   width: 100%;
   margin-bottom: 0;
@@ -98,4 +102,12 @@ h6 {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #ca1237;
+}
+
+.map {
+  height: 220px;
+}
+
+#map {
+  height: 200px;
 }

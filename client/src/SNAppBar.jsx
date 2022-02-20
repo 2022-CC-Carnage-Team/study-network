@@ -36,9 +36,14 @@ class SNAppBar extends Component {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Typography
+              className="site-title"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
               <Link to="/" className="no-link-style">
-                WSU Student Network
+                WSU Study Network
               </Link>
             </Typography>
             {this.props.user ? (
