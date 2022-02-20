@@ -55,6 +55,7 @@ app.use(passport.session());
 
 const userRouter = require("./routes/user_routes");
 const postRouter = require("./routes/post_routes");
+const res = require("express/lib/response");
 
 // user related routes
 app.use("/users", userRouter);
@@ -87,6 +88,9 @@ app.get(
     res.redirect(process.env.WEBAPP_URL + "/profile");
   }
 );
+// create a basic GET route
+app.get("/backend_server", (req, res) => {
+  res.send({ express: "Hello World from backend server..." });
 
 // post routes (testing only - will be removed in the near future)
 
