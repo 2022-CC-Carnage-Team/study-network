@@ -88,16 +88,13 @@ app.get(
     res.redirect(process.env.WEBAPP_URL + "/profile");
   }
 );
-<<<<<<< HEAD
 // create a basic GET route
 app.get("/backend_server", (req, res) => {
   res.send({ express: "Hello World from backend server..." });
-=======
 
 // post routes (testing only - will be removed in the near future)
 
 // handles react routes
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/client/build/index.html"));
->>>>>>> f121c3b4bb49bed9da65403d17a28876e8670015
 });
