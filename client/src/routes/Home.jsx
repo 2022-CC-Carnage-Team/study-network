@@ -18,16 +18,45 @@ const user = {
 };
 
 class Home extends Component {
-  state = {};
+  state = {
+    recentPosts: null,
+  };
+
+  componentDidMount() {
+    this.callBackendAPI()
+      .then((res) => this.setState({ recentPosts: res }))
+      .catch((err) => console.log(err));
+  }
+
+  // fetching the GET route from the Express server which matches the GET route from server.js
+  callBackendAPI = async () => {
+    const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/posts`);
+    const body = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    return body;
+  };
 
   render() {
     return (
       <Container maxWidth="lg">
         <Paper className="page-container">
-          <Typography variant="h4" component="h4" gutterBottom>
-            Recent Posts
-          </Typography>
-          <PostCard author={user} />
+          {this.state.recentPosts ? (
+            <div>
+              <Typography variant="h4" component="h4" gutterBottom>
+                Recent Posts
+              </Typography>
+              {this.state.recentPosts.map((post) => (
+                <PostCard author={post.author} contents={post.post} />
+              ))}
+            </div>
+          ) : (
+            <Typography variant="h5" align="center" component="h5" gutterBottom>
+              Loading...
+            </Typography>
+          )}
         </Paper>
       </Container>
     );

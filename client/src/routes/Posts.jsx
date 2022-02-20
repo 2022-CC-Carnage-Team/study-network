@@ -61,19 +61,12 @@ function formatDuration(in_secs) {
 class PostCard extends Component {
   state = {
     author: this.props.author,
-    contents: {
-      title: "Example Title",
-      class: "Example Class",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisi vel consectetur interdum, nisl nisi tincidunt nisi, eget consectetur erat nisi euismod nisi. Sed euismod, nisi vel consectetur interdum, nisl nisi tincidunt nisi, eget consectetur erat nisi euismod nisi. Sed euismod, nisi vel consectetur interdum, nisl nisi tincidunt nisi, eget consectetur erat nisi euismod nisi. Sed euismod, nisi vel consectetur interdum, nisl.",
-      difficulty: 37,
-      duration: 2334, // seconds
-    },
+    contents: this.props.contents,
   };
-
   render() {
+    console.log(this.props);
     return (
-      <Card variant="outlined" className="secondary-card">
+      <Card variant="outlined" className="secondary-card top-margin">
         <CardContent>
           <Typography variant="h5" component="h2">
             Assignment: {this.state.contents.title}
@@ -104,40 +97,61 @@ class PostCard extends Component {
             {formatDuration(this.state.contents.duration)}
           </Typography>
           <Paper className="padding-margin" variant="outlined">
-            <Grid
-              container
-              justifyContent="flex-start"
-              direction="row"
-              alignItems="center"
-            >
-              <Grid item xs={2}>
-                <Avatar>
-                  <Avatar
-                    alt={this.state.author.firstName}
-                    src={this.state.author.google.profilePic}
-                  />
-                </Avatar>
+            {this.state.author ? (
+              <Grid
+                container
+                justifyContent="flex-start"
+                direction="row"
+                alignItems="center"
+              >
+                <Grid item xs={2}>
+                  <Avatar>
+                    <Avatar
+                      alt={this.state.author.firstName}
+                      src={this.state.author.google.profilePic}
+                    />
+                  </Avatar>
+                </Grid>
+                <Grid item xs={4}>
+                  <a
+                    className="no-link-style"
+                    href={`mailto:${this.state.author.google.email}`}
+                  >
+                    <Button variant="primary">
+                      {this.state.author.firstName} {this.state.author.lastName}
+                    </Button>
+                  </a>
+                </Grid>
               </Grid>
-              <Grid item xs={4}>
-                <a
-                  className="no-link-style"
-                  href={`mailto:${this.state.author.google.email}`}
-                >
-                  <Button variant="primary">
-                    {this.state.author.firstName} {this.state.author.lastName}
-                  </Button>
-                </a>
-              </Grid>
-            </Grid>
+            ) : (
+              <Typography variant="p" component="p">
+                Unknown User
+              </Typography>
+            )}
           </Paper>
         </CardContent>
-        <CardActions disableSpacing>
+        <CardActions>
           <IconButton aria-label="like">
             <FavoriteIcon />
           </IconButton>
+          <Typography variant="h6" component="h5">
+            {this.state.contents.likes}
+          </Typography>
           <IconButton aria-label="share">
             <ShareIcon />
           </IconButton>
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="flex-end"
+          >
+            <Grid item xs>
+              <Typography className="align-right soft-text">
+                Posted: {new Date(this.state.contents.createdAt).toDateString()}
+              </Typography>
+            </Grid>
+          </Grid>
         </CardActions>
       </Card>
     );

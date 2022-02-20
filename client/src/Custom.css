@@ -52,3 +52,15 @@ h6 {
 .top-margin {
   margin-top: 1rem;
 }
+
+.align-right {
+  text-align: right;
+}
+
+.soft-text {
+  opacity: 0.5;
+}
+
+.liked {
+  color: #ff3961 !important;
+}

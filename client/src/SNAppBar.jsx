@@ -43,19 +43,19 @@ class SNAppBar extends Component {
             </Typography>
             {this.props.user ? (
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ flexGrow: 1, padding: 2 }}
-                >
-                  {this.props.user.firstName} {this.props.user.lastName}
-                </Typography>
-                <IconButton onClick={this.handleMenu} sx={{ p: 0 }}>
+                <Button onClick={this.handleMenu} sx={{ p: 0 }}>
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ flexGrow: 1, padding: 2 }}
+                  >
+                    {this.props.user.firstName} {this.props.user.lastName}
+                  </Typography>
                   <Avatar
                     alt={this.props.user.firstName}
                     src={this.props.user.google.profilePic}
                   />
-                </IconButton>
+                </Button>
                 <Menu
                   id="menu-appbar"
                   anchorEl={this.state.anchorEl}
