@@ -92,6 +92,7 @@ recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
     timeStudying: req.body.timeStudying,
     difficulty: req.body.difficulty,
     class: req.body.class,
+    postType: req.body.postType,
     // need to implement test cases for if wrong format is inputted to prevent DB issues
   };
   post.create(doc, function (error, result) {
@@ -100,11 +101,6 @@ recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
       res.status(400).send("Error uploading new post");
     } else {
       //console.log(`Added a new post with id  ${doc.id}`);
-      console.log(`likes  ${doc.likes}`);
-      console.log(`post_id ${doc.post_id}`);
-      console.log(`author_d ${doc.author_id}`);
-      console.log(`coordinates ${doc.coordinates}`);
-      console.log(`time on assignment: ${doc.timeStudying}`);
       res.status(204).send(`Added a new post with id  ${doc.id}`);
     }
   });

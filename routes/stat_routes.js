@@ -42,6 +42,22 @@ router.get("/global", async (req, res) => {
 router.get("/user", ensureAuth, async (req, res) => {
   // get number of posts
   let numPosts = await post.countDocuments({ author_id: req.user.google.id });
+
+  // group time spent on study by day
+  let timeByDay = await post.aggregate([
+    {
+      $group: {
+        _id: {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: "$createdAt",
+          },
+        },
+        totalTime: { $sum: "$timeStudying" },
+      },
+    },
+  ]);
+
   // get total time spent on study for user
   let totalTime = await post.aggregate([
     {
@@ -68,6 +84,7 @@ router.get("/user", ensureAuth, async (req, res) => {
   ]);
 
   res.status(200).send({
+    timeByDay: timeByDay,
     numPosts: numPosts,
     totalTime: totalTime[0].totalTime,
     avgTime: avgTime[0].avgTime,

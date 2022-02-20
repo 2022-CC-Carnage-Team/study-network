@@ -23,6 +23,7 @@ class Profile extends Component {
   state = {
     userPosts: null,
     stats: {
+      timeByDay: [],
       numPosts: 0,
       numUsers: 0,
       totalTime: 0,
@@ -54,7 +55,7 @@ class Profile extends Component {
 
   getStats = async () => {
     const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/stats/global`
+      `${process.env.REACT_APP_API_ENDPOINT}/stats/user`
     );
     const body = await response.json();
 
@@ -72,7 +73,7 @@ class Profile extends Component {
             <Typography variant="h4" component="h4" gutterBottom>
               Profile
             </Typography>
-            <Card className="secondary-card">
+            <Card className="user-card">
               <CardHeader
                 avatar={
                   <Avatar
@@ -85,9 +86,11 @@ class Profile extends Component {
               />
               <CardMedia className="profile-image" title="Profile Image" />
             </Card>
-            {/* <Card className="secondary-card padding-margin">
-              <UserHeatmap />
-            </Card> */}
+            <Card variant="outlined" className="secondary-card top-margin">
+              <CardContent>
+                <UserHeatmap data={this.state.stats.timeByDay} />
+              </CardContent>
+            </Card>
             <Typography variant="h4" component="h4">
               User Study Stats
             </Typography>

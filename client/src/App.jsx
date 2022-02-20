@@ -30,8 +30,8 @@ export const theme = createTheme({
       main: "#CACACA",
     },
     background: {
-      default: "#212121",
-      paper: "#212121",
+      default: "#111111",
+      paper: "#111111",
     },
   },
   spacing: 8,

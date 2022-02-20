@@ -29,6 +29,10 @@ body {
 }
 
 .secondary-card {
+  background-color: #151515 !important;
+}
+
+.user-card {
   background-color: #353535 !important;
 }
 

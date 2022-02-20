@@ -51,6 +51,10 @@ const Post = new Schema({
     type: Number,
     default: 0,
   },
+  postType: {
+    type: String,
+    default: "Assignment",
+  },
   coordinates: { type: [Number], default: [0, 0] },
 });
 const POST = mongoose.model("Post", Post, "posts");
