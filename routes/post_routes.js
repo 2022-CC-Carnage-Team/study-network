@@ -79,22 +79,24 @@ recordRoutes.route("/upload").post(function (req, res) {
   });
 });
 
-// untested - not sure this works
 recordRoutes.route("/changelike").post(function (req, res) {
   // 1 to add like, 0 to remove like
   post.findOne(
     { post_id: req.body.post_id, author_id: req.body.author_id },
     function (err, modPost) {
-      if (req.body.changeLike == 1) {
+      if (req.body.change_like == 1) {
         modPost.likes += 1;
         modPost.save(function (err) {});
-        res.status(204).send(`Added a like to post`);
-      } else if (req.body.changeLike == 0) {
+        console.log(`Failed to change like on post with id ${req.body.post_id}`);
+        res.status(204).send(`Added a like to post ${req.body.post_id}`);
+      } else if (req.body.change_like == 0) {
         modPost.likes -= 1;
         modPost.save(function (err) {});
-        res.status(204).send(`Removed a like from post`);
+        console.log(`Failed to change like on post with id ${req.body.post_id}`);
+        res.status(204).send(`Removed a like from post ${req.body.post_id}`);
       } else {
-        res.status(400).send(`Failed to change like on post with id`);
+        console.log(`Failed to change like on post with id ${req.body.post_id}`);
+        res.status(400).send(`Failed to change like on post with id ${req.body.post_id}`);
       }
     }
   );
