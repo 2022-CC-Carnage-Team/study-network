@@ -4,6 +4,9 @@ const recordRoutes = express.Router();
 const post = require("../models/post");
 const user = require("../models/user");
 
+// ensure auth
+const { ensureAuth } = require("../authenticate");
+
 recordRoutes.route("/").get(function (req, res) {
   post
     .find()
@@ -49,10 +52,10 @@ recordRoutes.route("/fetch").post(function (req, res) {
   });
 });
 
-recordRoutes.route("/upload").post(function (req, res) {
+recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
   const doc = {
     post_id: uuidv4(),
-    author_id: req.body.author_id,
+    author_id: req.user.google.id,
     title: req.body.title,
     description: req.body.description,
     // times will need to be converted from string to date?
@@ -127,23 +130,21 @@ recordRoutes.route("/delete").post(function (req, res) {
   });
 });
 recordRoutes.route("/time_studying").get(function (req, res) {
-    var totalAssignmentTime = 0;
-    post
-    .find()
-    .exec(async function (err, posts) {
-      if (err) {
-        res.status(400).send("Error retrieving posts");
-      } else {
-        // loop through posts and get the user data for each post
-        let postArr = [];
-        for (let post of posts) {
-            // need error checking here for when this field DNE
-            totalAssignmentTime += post.timeStudying;
-        }
-        console.log(`total Assignment time: ${totalAssignmentTime}`);
-        res.status(200).send();
+  var totalAssignmentTime = 0;
+  post.find().exec(async function (err, posts) {
+    if (err) {
+      res.status(400).send("Error retrieving posts");
+    } else {
+      // loop through posts and get the user data for each post
+      let postArr = [];
+      for (let post of posts) {
+        // need error checking here for when this field DNE
+        totalAssignmentTime += post.timeStudying;
       }
-    });
-})
+      console.log(`total Assignment time: ${totalAssignmentTime}`);
+      res.status(200).send();
+    }
+  });
+});
 
 module.exports = recordRoutes;

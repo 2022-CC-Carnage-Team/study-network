@@ -6,7 +6,7 @@ import "./Custom.css";
 
 import { Home } from "./routes/Home";
 import { Profile } from "./routes/Profile";
-import { NewPost } from "./routes/Posts";
+import NewPost from "./routes/NewPost";
 
 import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
 import { SNAppBar } from "./SNAppBar";
@@ -27,7 +27,7 @@ export const theme = createTheme({
       main: "#A60F2D",
     },
     secondary: {
-      main: "#CA1237",
+      main: "#CACACA",
     },
     background: {
       default: "#212121",

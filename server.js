@@ -9,6 +9,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const cors = require("cors");
 const path = require("path");
+const bodyParser = require("body-parser");
 
 require("./auth/google-auth")(passport);
 require("./authenticate");
@@ -41,6 +42,12 @@ mongoose.connect(process.env.MONGO_DB_CONNECTION_STRING, {
 });
 
 app.use(express.urlencoded({ extended: true }));
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
 app.use(
   session({
     secret: process.env.SECRET,

@@ -48,8 +48,8 @@ const Post = new Schema({
     default: 0,
   },
   timeStudying: {
-      type: Number,
-      default: 0,
+    type: Number,
+    default: 0,
   },
   coordinates: { type: [Number], default: [0, 0] },
 });

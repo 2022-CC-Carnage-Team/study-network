@@ -5,7 +5,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { Paper, Grid, Button } from "@mui/material";
 
-import { PostCard } from "./Posts";
+import PostCard from "./Posts";
 
 const user = {
   firstName: "Example",
