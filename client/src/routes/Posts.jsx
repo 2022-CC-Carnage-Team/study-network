@@ -18,16 +18,17 @@ import {
 
 import { formatDuration } from "../utility";
 
-// favorite icon
+// icons
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
-// share icon
+import PersonPinIcon from "@mui/icons-material/PersonPin";
 import ShareIcon from "@mui/icons-material/Share";
 
 const Map = ReactMapboxGl({
   attributionControl: false,
+  interactive: false,
   accessToken:
     "pk.eyJ1IjoibmxhaGEiLCJhIjoiY2s2YnR3aTViMTVkODNqbGpvcmQ4cXNkNSJ9.tv42gtwJFcNy3sjYxrPopg",
 });
@@ -36,7 +37,7 @@ class PostCard extends Component {
   state = {
     author: this.props.author,
     contents: this.props.contents,
-    likeStatus: 0,
+    likeStatus: this.props.liked,
     deleted: false,
   };
 
@@ -44,7 +45,7 @@ class PostCard extends Component {
     let likeStatusNew = !this.state.likeStatus;
     this.setState({ likeStatus: likeStatusNew });
     // make post request to server
-    fetch(process.env.REACT_APP_API_ENDPOINT + "/posts/changelike", {
+    fetch("/posts/changelike", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +67,7 @@ class PostCard extends Component {
 
   handleDelete = () => {
     // make post request to server
-    fetch(process.env.REACT_APP_API_ENDPOINT + "/posts/delete", {
+    fetch("/posts/delete", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -104,7 +105,12 @@ class PostCard extends Component {
               <Typography variant="h6" component="h5">
                 Assignment Difficulty:
               </Typography>
-              <Stack spacing={2} direction="row" alignItems="center">
+              <Stack
+                spacing={2}
+                direction="row"
+                alignItems="center"
+                sx={{ mt: "0.75rem" }}
+              >
                 <SentimentSatisfiedAltIcon />
                 <LinearProgress
                   className="difficulty-meter"
@@ -112,7 +118,7 @@ class PostCard extends Component {
                   thickness={4}
                   variant="determinate"
                   value={this.state.contents.difficulty}
-                  sx={{ minWidth: "50vw" }}
+                  sx={{ minWidth: "200px", maxWidth: "500px" }}
                 />
                 <SentimentVeryDissatisfiedIcon />
               </Stack>
@@ -135,34 +141,21 @@ class PostCard extends Component {
                       width: "100%",
                       borderRadius: "10px",
                     }}
+                    zoom={[15]}
                     center={[
                       this.props.contents.coordinates[1],
                       this.props.contents.coordinates[0],
                     ]}
                   >
-                    <Layer
-                      type="symbol"
-                      id="marker"
-                      layout={{ "icon-image": "marker-15" }}
+                    <Marker
+                      coordinates={[
+                        this.props.contents.coordinates[1],
+                        this.props.contents.coordinates[0],
+                      ]}
+                      anchor="bottom"
                     >
-                      <Marker
-                        coordinates={[
-                          this.props.contents.coordinates[1],
-                          this.props.contents.coordinates[0],
-                        ]}
-                        anchor="bottom"
-                      >
-                        {this.state.author ? (
-                          <Avatar
-                            alt={this.state.author.firstName}
-                            src={this.state.author.google.profilePic}
-                          />
-                        ) : (
-                          // text avatar
-                          <Avatar>{this.state.contents.title.charAt(0)}</Avatar>
-                        )}
-                      </Marker>
-                    </Layer>
+                      <PersonPinIcon className="person-marker" />
+                    </Marker>
                   </Map>
                 </Paper>
               ) : (
@@ -180,14 +173,14 @@ class PostCard extends Component {
                       <Avatar>
                         <Avatar
                           alt={this.state.author.firstName}
-                          src={this.state.author.google.profilePic}
+                          src={this.state.author.microsoft.profilePic}
                         />
                       </Avatar>
                     </Grid>
                     <Grid item xs={4}>
                       <a
                         className="no-link-style"
-                        href={`mailto:${this.state.author.google.email}`}
+                        href={`mailto:${this.state.author.microsoft.email}`}
                       >
                         <Button variant="primary">
                           {this.state.author.firstName}{" "}

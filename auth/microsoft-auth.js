@@ -1,42 +1,43 @@
-var GoogleStrategy = require("passport-google-oauth20").Strategy;
+var MicrosoftStrategy = require("passport-microsoft").Strategy;
 const mongoose = require("mongoose");
 const User = require("../models/user");
 
 module.exports = function (passport) {
   passport.use(
-    new GoogleStrategy(
+    new MicrosoftStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+        clientID: process.env.MICROSOFT_CLIENT_ID,
+        clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+        callbackURL: process.env.CALLBACK_URL,
         passReqToCallback: true,
+        scope: ["user.read"],
       },
       async (req, accessToken, refreshToken, profile, done) => {
-        //get the user data from google
+        //get the user data from microsoft
         const newUser = {
-          google: {
+          microsoft: {
             email: profile.emails[0].value,
             id: profile.id,
             token: accessToken,
             refreshToken: refreshToken,
-            profilePic: profile.photos[0].value,
+            profilePic: null, // microsoft doesn't give us profile pic
           },
-          authStratgy: "google",
+          authStratgy: "microsoft",
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
         };
 
         try {
           //find the user in our database
-          let user = await User.findOne({ googleId: profile.id });
+          let user = await User.findOne({ "microsoft.id": profile.id });
 
           if (user) {
             //If user present in our database.
             done(null, user);
           } else {
             // if user is not preset in our database save user data to database.
-            user = await User.create(newUser);
-            done(null, user);
+            newUserMdl = await User.create(newUser);
+            done(null, newUserMdl);
           }
         } catch (err) {
           console.error(err);

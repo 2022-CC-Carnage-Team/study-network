@@ -118,3 +118,9 @@ h6 {
 #map {
   height: 200px;
 }
+
+.person-marker {
+  background-color: #0e0e0e;
+  color: #ca1237;
+  border-radius: 50%;
+}

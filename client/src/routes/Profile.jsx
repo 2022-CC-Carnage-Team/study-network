@@ -42,9 +42,7 @@ class Profile extends Component {
   }
 
   callBackendAPI = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/posts/userposts`
-    );
+    const response = await fetch(`/posts/userposts`);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -54,9 +52,7 @@ class Profile extends Component {
   };
 
   getStats = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/stats/user`
-    );
+    const response = await fetch(`/stats/user`);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -78,11 +74,11 @@ class Profile extends Component {
                 avatar={
                   <Avatar
                     alt={this.props.user.firstName}
-                    src={this.props.user.google.profilePic}
+                    src={this.props.user.microsoft.profilePic}
                   />
                 }
                 title={`${this.props.user.firstName} ${this.props.user.lastName}`}
-                subheader={this.props.user.google.email}
+                subheader={this.props.user.microsoft.email}
               />
               <CardMedia className="profile-image" title="Profile Image" />
             </Card>
@@ -144,6 +140,7 @@ class Profile extends Component {
                     owned={true}
                     author={post.author}
                     contents={post.post}
+                    liked={post.liked}
                   />
                 ))}
               </div>

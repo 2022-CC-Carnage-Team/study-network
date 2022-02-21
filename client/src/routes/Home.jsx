@@ -12,7 +12,7 @@ import { formatDuration } from "../utility";
 const user = {
   firstName: "Example",
   lastName: "User",
-  google: {
+  microsoft: {
     profilePic:
       "https://pbs.twimg.com/profile_images/1465047742338646019/a54vdnaQ_400x400.jpg",
     email: "test@example.com",
@@ -42,7 +42,7 @@ class Home extends Component {
 
   // fetching the GET route from the Express server which matches the GET route from server.js
   callBackendAPI = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/posts`);
+    const response = await fetch(`/posts`);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -52,9 +52,7 @@ class Home extends Component {
   };
 
   getStats = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/stats/global`
-    );
+    const response = await fetch(`/stats/global`);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -121,7 +119,11 @@ class Home extends Component {
                 </Link>
               </Grid>
               {this.state.recentPosts.map((post) => (
-                <PostCard author={post.author} contents={post.post} />
+                <PostCard
+                  author={post.author}
+                  contents={post.post}
+                  liked={post.liked}
+                />
               ))}
             </div>
           ) : (

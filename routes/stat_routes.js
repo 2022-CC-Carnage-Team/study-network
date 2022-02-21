@@ -41,7 +41,10 @@ router.get("/global", async (req, res) => {
 
 router.get("/user", ensureAuth, async (req, res) => {
   // get number of posts
-  let numPosts = await post.countDocuments({ author_id: req.user.google.id });
+
+  var numPosts = await post.countDocuments({
+    author_id: req.user.microsoft.id,
+  });
 
   // group time spent on study by day
   let timeByDay = await post.aggregate([
@@ -61,7 +64,7 @@ router.get("/user", ensureAuth, async (req, res) => {
   // get total time spent on study for user
   let totalTime = await post.aggregate([
     {
-      $match: { author_id: req.user.google.id },
+      $match: { author_id: req.user.microsoft.id },
     },
     {
       $group: {
@@ -73,7 +76,7 @@ router.get("/user", ensureAuth, async (req, res) => {
   // get average time spent on study for user
   let avgTime = await post.aggregate([
     {
-      $match: { author_id: req.user.google.id },
+      $match: { author_id: req.user.microsoft.id },
     },
     {
       $group: {
@@ -82,6 +85,12 @@ router.get("/user", ensureAuth, async (req, res) => {
       },
     },
   ]);
+
+  // if any of these are undefined, set them to 0
+  timeByDay === undefined ? timeByDay : 0;
+  numPosts === undefined ? numPosts : 0;
+  totalTime === undefined ? totalTime : [0];
+  avgTime === undefined ? avgTime : [0];
 
   res.status(200).send({
     timeByDay: timeByDay,

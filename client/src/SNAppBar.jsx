@@ -64,7 +64,7 @@ class SNAppBar extends Component {
                   </Typography>
                   <Avatar
                     alt={this.props.user.firstName}
-                    src={this.props.user.google.profilePic}
+                    src={this.props.user.microsoft.profilePic}
                   />
                 </Button>
                 <Menu
@@ -96,7 +96,7 @@ class SNAppBar extends Component {
             ) : (
               <a
                 className="no-link-style"
-                href={process.env.REACT_APP_API_ENDPOINT + "/auth/google"}
+                href={`${process.env.REACT_APP_API_ENDPOINT}/auth/microsoft`}
               >
                 <Button color="inherit">Login</Button>
               </a>

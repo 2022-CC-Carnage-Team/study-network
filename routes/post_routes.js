@@ -4,8 +4,25 @@ const recordRoutes = express.Router();
 const post = require("../models/post");
 const user = require("../models/user");
 
+const { processUser } = require("../utility.js");
+
 // ensure auth
-const { ensureAuth } = require("../authenticate");
+const { ensureAuth, ensureAuthNoRedirect } = require("../authenticate");
+
+// check if post is liked by user
+async function isLikedByUser(postId, userId) {
+  // check if post id is in the user's liked posts
+  let likedPosts = await user
+    .findOne({ "microsoft.id": userId })
+    .select("likedPosts");
+
+  // if liked posts contains post id, return true
+  if (likedPosts.likedPosts.includes(postId)) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 recordRoutes.route("/").get(function (req, res) {
   post
@@ -19,11 +36,27 @@ recordRoutes.route("/").get(function (req, res) {
         // loop through posts and get the user data for each post
         let postArr = [];
         for (let post of posts) {
-          let resUser = await user.findOne({ "google.id": post.author_id });
-          postArr.push({
-            post: post,
-            author: resUser,
+          let resUser = await user.findOne({
+            "microsoft.id": post.author_id,
           });
+          let liked = false;
+          if (ensureAuthNoRedirect(req)) {
+            liked = await isLikedByUser(post.post_id, req.user.microsoft.id);
+          }
+          if (resUser) {
+            resUser = processUser(resUser);
+            postArr.push({
+              post: post,
+              author: resUser,
+              liked: liked,
+            });
+          } else {
+            postArr.push({
+              post: post,
+              author: null,
+              liked: liked,
+            });
+          }
         }
 
         res.status(200).send(postArr);
@@ -32,18 +65,23 @@ recordRoutes.route("/").get(function (req, res) {
 });
 
 recordRoutes.route("/fetch").post(function (req, res) {
-  post.findOne({ post_id: req.body.post_id }, function (err, findPost) {
+  post.findOne({ post_id: req.body.post_id }, async function (err, findPost) {
     if (err) {
       res.status(400).send(`Error finding post`);
     } else {
       let userComplete = {};
+      let liked = false;
+      if (ensureAuthNoRedirect(req)) {
+        liked = await isLikedByUser(findPost.post_id, req.user.microsoft.id);
+      }
       user.findOne(
-        { google: { id: findPost.author_id } },
+        { microsoft: { id: findPost.author_id } },
         function (err, user) {
           if (err) {
             userComplete = { post: findPost, author: null };
           } else {
-            userComplete = { post: findPost, author: user };
+            user = processUser(user);
+            userComplete = { post: findPost, author: user, liked: liked };
           }
         }
       );
@@ -54,7 +92,7 @@ recordRoutes.route("/fetch").post(function (req, res) {
 
 recordRoutes.route("/userposts").get(ensureAuth, function (req, res) {
   post
-    .find({ author_id: req.user.google.id })
+    .find({ author_id: req.user.microsoft.id })
     .sort({ createdAt: -1 })
     .limit(5)
     .exec(async function (err, posts) {
@@ -64,13 +102,26 @@ recordRoutes.route("/userposts").get(ensureAuth, function (req, res) {
         // loop through posts and get the user data for each post
         let postArr = [];
         for (let post of posts) {
-          let resUser = await user.findOne({ "google.id": post.author_id });
-          postArr.push({
-            post: post,
-            author: resUser,
-          });
+          let resUser = await user.findOne({ "microsoft.id": post.author_id });
+          let liked = false;
+          if (ensureAuthNoRedirect(req)) {
+            liked = await isLikedByUser(post.post_id, req.user.microsoft.id);
+          }
+          if (resUser) {
+            resUser = processUser(resUser);
+            postArr.push({
+              post: post,
+              author: resUser,
+              liked: liked,
+            });
+          } else {
+            postArr.push({
+              post: post,
+              author: null,
+              liked: liked,
+            });
+          }
         }
-
         res.status(200).send(postArr);
       }
     });
@@ -79,7 +130,7 @@ recordRoutes.route("/userposts").get(ensureAuth, function (req, res) {
 recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
   const doc = {
     post_id: uuidv4(),
-    author_id: req.user.google.id,
+    author_id: req.user.microsoft.id,
     title: req.body.title,
     description: req.body.description,
     // times will need to be converted from string to date?
@@ -106,39 +157,53 @@ recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
   });
 });
 
-recordRoutes.route("/changelike").post(function (req, res) {
-  // 1 to add like, 0 to remove like
-  post.findOne({ post_id: req.body.post_id }, function (err, modPost) {
-    if (!err) {
-      if (req.body.change_like == 1) {
-        modPost.likes += 1;
-        modPost.save(function (err) {});
-        console.log(
-          `Failed to change like on post with id ${req.body.post_id}`
+recordRoutes.route("/changelike").post(ensureAuth, function (req, res) {
+  // find post in a user's likedPosts array, if it exists, remove it, if not, add it
+  user.findOne({ "microsoft.id": req.user.microsoft.id }, function (err, user) {
+    if (err) {
+      res.status(400).send("Error finding user");
+    } else {
+      // check if post id exists in user's likedPosts array
+      let index = user.likedPosts.indexOf(req.body.post_id);
+      if (index > -1) {
+        user.likedPosts.splice(index, 1);
+        // remove like from post
+        post.findOneAndUpdate(
+          { post_id: req.body.post_id },
+          { $inc: { likes: -1 } },
+          function (err, post) {
+            if (err) {
+              res.status(400).send("Error updating post");
+            }
+          }
         );
-        res.status(204).send(`Added a like to post ${req.body.post_id}`);
-      } else if (req.body.change_like == 0) {
-        modPost.likes -= 1;
-        modPost.save(function (err) {});
-        console.log(
-          `Failed to change like on post with id ${req.body.post_id}`
-        );
-        res.status(204).send(`Removed a like from post ${req.body.post_id}`);
       } else {
-        console.log(
-          `Failed to change like on post with id ${req.body.post_id}`
+        user.likedPosts.push(req.body.post_id);
+        // add like to post
+        post.findOneAndUpdate(
+          { post_id: req.body.post_id },
+          { $inc: { likes: 1 } },
+          function (err, post) {
+            if (err) {
+              res.status(400).send("Error updating post");
+            }
+          }
         );
-        res
-          .status(400)
-          .send(`Failed to change like on post with id ${req.body.post_id}`);
       }
+      user.save(function (err, result) {
+        if (err) {
+          res.status(400).send("Error saving user");
+        }
+      });
+
+      res.status(204).send("Success");
     }
   });
 });
 recordRoutes.route("/delete").post(ensureAuth, function (req, res) {
   post.findOne({ post_id: req.body.post_id }, function (err, modPost) {
     if (!err) {
-      if (modPost.author_id == req.user.google.id) {
+      if (modPost.author_id == req.user.microsoft.id) {
         post.deleteOne({ post_id: req.body.post_id }, function (err, delPost) {
           if (err) {
             res.status(400).send(`Error deleting post`);

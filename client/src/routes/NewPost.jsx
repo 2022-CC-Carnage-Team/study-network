@@ -74,7 +74,7 @@ class NewPost extends Component {
     }
 
     // make post request to server
-    fetch(process.env.REACT_APP_API_ENDPOINT + "/posts/upload", {
+    fetch("/posts/upload", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,7 +120,7 @@ class NewPost extends Component {
     }
 
     // make post request to server
-    fetch(process.env.REACT_APP_API_ENDPOINT + "/posts/upload", {
+    fetch("/posts/upload", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -258,11 +258,7 @@ class NewPost extends Component {
             ) : (
               <div>
                 <Typography variant="h6" component="div">
-                  Please{" "}
-                  <a href={process.env.REACT_APP_API_ENDPOINT + "/auth/google"}>
-                    login
-                  </a>{" "}
-                  to post
+                  Please <a href={"/auth/microsoft"}>login</a> to post
                 </Typography>
               </div>
             )
