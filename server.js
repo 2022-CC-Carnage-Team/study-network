@@ -84,11 +84,6 @@ app.get(
   }
 );
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  res.status(404).send("Sorry, that route does not exist. 🤷‍♂️");
-});
-
 // handles react routes
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/client/build/index.html"));
