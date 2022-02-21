@@ -61,7 +61,7 @@ app.use("/stats", statRouter);
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 // direct the default route to the static folder client/build
-//app.use(express.static(path.join(__dirname, "client/build")));
+app.use(express.static(path.join(__dirname, "client/build")));
 
 // auth routes
 app.get("/auth/microsoft/failure", (req, res) => {
@@ -90,7 +90,6 @@ app.use(function (req, res, next) {
 });
 
 // handles react routes
-/*app.get("*", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/client/build/index.html"));
 });
-*/
