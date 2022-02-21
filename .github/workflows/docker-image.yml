@@ -17,6 +17,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
+      uses: actions/checkout@v2
     - name: Publish Image
       uses: matootie/github-docker@v3.1.0
       with:
