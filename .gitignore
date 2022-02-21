@@ -46,7 +46,7 @@ jspm_packages/
 web_modules/
 
 # Test Cases
-test_cases/
+#test_cases/
 
 # TypeScript cache
 *.tsbuildinfo
