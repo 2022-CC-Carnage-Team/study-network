@@ -25,7 +25,7 @@ jobs:
       uses: craftech-io/package-action@v3.1.0
       with:
         # GitHub Repository Token to log in using.
-        accessToken: ${{ secrets.PAT }}
+        access_token: ${{ secrets.PAT }}
         # Where should GitHub Docker find the Dockerfile, relative to the root of the repository.
         # GitHub user to publish the image on behalf of.
         username: nlaha
