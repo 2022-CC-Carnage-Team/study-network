@@ -52,7 +52,7 @@ router.get("/global", async (req, res) => {
   });
 });
 
-router.get("/user", ensureAuth, async (req, res) => {
+router.get("/user", async (req, res) => {
   // get user id from query
   let userId = req.query.id;
 

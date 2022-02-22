@@ -15,6 +15,7 @@ import {
   Grid,
   Stack,
   Tooltip,
+  useMediaQuery,
 } from "@mui/material";
 
 import { formatDuration } from "../utility";
@@ -40,6 +41,7 @@ function PostCard(props) {
   const [likes, setLikes] = useState(props.contents.likes);
   const [likeStatus, setLikeStatus] = useState(props.liked);
   const [deleted, setDeleted] = useState(false);
+  const matches = useMediaQuery("(min-width:600px)");
 
   const handleLike = () => {
     let likeStatusNew = !likeStatus;
@@ -120,7 +122,10 @@ function PostCard(props) {
                 thickness={4}
                 variant="determinate"
                 value={contents.difficulty}
-                sx={{ minWidth: "200px", maxWidth: "500px" }}
+                sx={{
+                  minWidth: matches ? "300px" : "100px",
+                  maxWidth: matches ? "500px" : "200px",
+                }}
               />
               <SentimentVeryDissatisfiedIcon />
             </Stack>

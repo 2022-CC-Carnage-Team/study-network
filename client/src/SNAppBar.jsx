@@ -6,12 +6,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Avatar, Menu, MenuItem, Stack } from "@mui/material";
+import { Avatar, Menu, MenuItem, Stack, useMediaQuery } from "@mui/material";
+import { IconButton } from "@mui/material";
 
 import { theme } from "./App";
 
 function SNAppBar(props) {
   const [anchorEl, setAnchorEl] = useState(null);
+  const matches = useMediaQuery("(min-width:600px)");
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -47,25 +49,18 @@ function SNAppBar(props) {
             sx={{ flexGrow: 1 }}
           >
             <Link to="/" className="no-link-style">
-              Coug Study Network
+              {matches ? "Coug Study Network" : "Study Net"}
             </Link>
           </Typography>
           {props.user ? (
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Button onClick={handleMenu} sx={{ p: 0 }}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  className="user-name"
-                  sx={{ flexGrow: 1, padding: 2 }}
-                >
-                  {props.user.firstName} {props.user.lastName}
-                </Typography>
-                <Avatar
-                  alt={props.user.firstName}
-                  src={props.user.microsoft.profilePic}
-                />
-              </Button>
+              <IconButton onClick={handleMenu} sx={{ p: 2 }}>
+                <MenuIcon />
+              </IconButton>
+              <Avatar
+                alt={props.user.firstName}
+                src={props.user.microsoft.profilePic}
+              />
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}

@@ -142,7 +142,7 @@ h6 {
 }
 
 .App {
-  margin-top: 5rem;
+  margin-top: 8rem;
 }
 
 .site-logo {
@@ -160,4 +160,8 @@ a {
 
 .red-text {
   color: #a60f2d !important;
+}
+
+.pagination ul {
+  justify-content: center;
 }

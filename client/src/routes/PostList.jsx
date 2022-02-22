@@ -74,6 +74,7 @@ function PostList(props) {
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
+            className="pagination"
           />
           {props.posts.map((post) => (
             <PostCard
@@ -92,6 +93,7 @@ function PostList(props) {
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
+            className="pagination"
           />
         </div>
       ) : (

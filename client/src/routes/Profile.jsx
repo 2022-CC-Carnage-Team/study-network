@@ -66,7 +66,7 @@ function Profile(props) {
     res = await callBackendAPI(newUser);
     setUserPosts(res);
 
-    res = await getStats();
+    res = await getStats(newUser);
     setStats(res);
   }, [userid, props.user, searchParams]);
 
@@ -91,8 +91,8 @@ function Profile(props) {
     }
   };
 
-  const getStats = async () => {
-    const response = await fetch(`/stats/user?id=${user.microsoft.id}`);
+  const getStats = async (newUser) => {
+    const response = await fetch(`/stats/user?id=${newUser.microsoft.id}`);
     const body = await response.json();
 
     if (response.status !== 200) {
