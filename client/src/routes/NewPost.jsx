@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
@@ -24,51 +24,46 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Grid,
 } from "@mui/material";
 
-class NewPost extends Component {
-  state = {
-    difficulty: 0,
-    title: "",
-    description: "",
-    class: "",
-    timeStudying: 0,
-    success: false,
+function NewPost(props) {
+  const [difficulty, setDifficulty] = useState(0);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [className, setClassName] = useState("");
+  const [timeStudying, setTimeStudying] = useState(0);
+  const [success, setSuccess] = useState(false);
+  const [postType, setPostType] = useState("");
+
+  const handleDiffChange = (event, newValue) => {
+    setDifficulty(newValue);
   };
 
-  handleDiffChange = (event, newValue) => {
-    this.setState({ difficulty: newValue });
+  const handleDurChange = (event, newValue) => {
+    setTimeStudying(newValue);
   };
 
-  handleDurChange = (event, newValue) => {
-    this.setState({ timeStudying: newValue });
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
   };
 
-  handleTitleChange = (event) => {
-    this.setState({ title: event.target.value });
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value);
   };
 
-  handleDescriptionChange = (event) => {
-    this.setState({ description: event.target.value });
+  const handleClassChange = (event) => {
+    setClassName(event.target.value);
   };
 
-  handleClassChange = (event) => {
-    this.setState({ class: event.target.value });
+  const handlePostTypeChange = (event) => {
+    setPostType(event.target.value);
   };
 
-  handlePostTypeChange = (event) => {
-    this.setState({ postType: event.target.value });
-  };
-
-  handleSubmit = (event, newValue) => {
+  const handleSubmit = (event, newValue) => {
     event.preventDefault();
 
-    if (
-      this.state.title == "" ||
-      this.state.description == "" ||
-      this.state.class == "" ||
-      this.state.postType == ""
-    ) {
+    if (title == "" || description == "" || className == "" || postType == "") {
       alert("Please fill out all fields");
       return;
     }
@@ -80,43 +75,37 @@ class NewPost extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        difficulty: this.state.difficulty,
-        title: this.state.title,
-        description: this.state.description,
-        class: this.state.class,
-        timeStudying: this.state.timeStudying,
-        postType: this.state.postType,
+        difficulty: difficulty,
+        title: title,
+        description: description,
+        class: className,
+        timeStudying: timeStudying,
+        postType: postType,
       }),
     });
 
-    this.setState({
-      success: true,
-    });
+    setSuccess(true);
   };
 
-  handleSubmitLoc = (event, newValue) => {
+  const handleSubmitLoc = (event, newValue) => {
     event.preventDefault();
 
-    if (
-      this.state.title == "" ||
-      this.state.description == "" ||
-      this.state.class == ""
-    ) {
+    if (title == "" || description == "" || className == "") {
       alert("Please fill out all fields");
       return;
     }
 
-    if (!this.props.isGeolocationAvailable) {
+    if (!props.isGeolocationAvailable) {
       alert("Your browser does not support Geolocation");
     }
 
-    if (!this.props.isGeolocationEnabled) {
+    if (!props.isGeolocationEnabled) {
       alert("Geolocation is not enabled");
     }
 
     let coords = [];
-    if (this.props.coords) {
-      coords = [this.props.coords.latitude, this.props.coords.longitude];
+    if (props.coords) {
+      coords = [props.coords.latitude, props.coords.longitude];
     }
 
     // make post request to server
@@ -126,158 +115,166 @@ class NewPost extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        difficulty: this.state.difficulty,
-        title: this.state.title,
-        description: this.state.description,
-        class: this.state.class,
-        timeStudying: this.state.timeStudying,
+        difficulty: difficulty,
+        title: title,
+        description: description,
+        class: className,
+        timeStudying: timeStudying,
         coordinates: coords,
       }),
     });
 
-    this.setState({
-      success: true,
-    });
+    setSuccess(true);
   };
 
-  render() {
-    return (
-      <Container maxWidth="lg">
-        <Paper className="page-container">
-          <Typography variant="h4" component="h4">
-            New Post
-          </Typography>
-          {this.state.success == false ? (
-            this.props.user ? (
-              <Card variant="outlined" className="secondary-card top-margin">
-                <CardContent>
-                  <Box
-                    component="form"
-                    sx={{
-                      "& .MuiTextField-root": {
-                        m: 2,
-                        minWidth: "90%",
-                        textAlign: "center",
-                      },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                  >
-                    <FormControl fullWidth>
-                      <InputLabel id="post-type-select-label">
-                        Post Type
-                      </InputLabel>
-                      <Select
-                        labelId="post-type-select-label"
-                        id="post-type-select"
-                        value={this.state.postType}
-                        label="Age"
-                        onChange={this.handlePostTypeChange}
-                      >
-                        <MenuItem value={"assignment"}>Assignment</MenuItem>
-                        <MenuItem value={"exam"}>Exam</MenuItem>
-                        <MenuItem value={"other"}>Other</MenuItem>
-                      </Select>
-                    </FormControl>
+  return (
+    <Container maxWidth="lg">
+      <Paper className="page-container">
+        <Typography variant="h4" component="h4">
+          New Post
+        </Typography>
+        {success == false ? (
+          props.user ? (
+            <Card variant="outlined" className="secondary-card top-margin">
+              <CardContent>
+                <Box
+                  component="form"
+                  sx={{
+                    "& .MuiTextField-root": {
+                      m: 2,
+                      minWidth: "90%",
+                      textAlign: "center",
+                    },
+                  }}
+                  noValidate
+                  autoComplete="off"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="post-type-select-label">Type</InputLabel>
+                    <Select
+                      labelId="post-type-select-label"
+                      id="post-type-select"
+                      value={postType}
+                      label="Age"
+                      onChange={handlePostTypeChange}
+                    >
+                      <MenuItem value={"assignment"}>Assignment</MenuItem>
+                      <MenuItem value={"exam"}>Exam</MenuItem>
+                      <MenuItem value={"other"}>Other</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <div>
+                    <TextField
+                      required
+                      id="outlined-required"
+                      label="Title"
+                      value={title}
+                      onChange={handleTitleChange}
+                    />
+                    <TextField
+                      required
+                      id="outlined-required"
+                      label="Class"
+                      value={className}
+                      onChange={handleClassChange}
+                    />
+                    <TextField
+                      multiline
+                      rows={4}
+                      required
+                      id="outlined-required"
+                      label="Description"
+                      value={description}
+                      onChange={handleDescriptionChange}
+                    />
                     <div>
-                      <TextField
-                        required
-                        id="outlined-required"
-                        label="Title"
-                        value={this.state.title}
-                        onChange={this.handleTitleChange}
-                      />
-                      <TextField
-                        required
-                        id="outlined-required"
-                        label="Class"
-                        value={this.state.class}
-                        onChange={this.handleClassChange}
-                      />
-                      <TextField
-                        multiline
-                        rows={4}
-                        required
-                        id="outlined-required"
-                        label="Description"
-                        value={this.state.description}
-                        onChange={this.handleDescriptionChange}
-                      />
-                      <div>
-                        Difficulty: {`${this.state.difficulty}%/100%`}
-                        <Stack
-                          spacing={2}
-                          direction="row"
-                          sx={{ mb: 2, ml: 5, mr: 5 }}
-                          alignItems="center"
-                        >
-                          <SentimentSatisfiedAltIcon />
-                          <Slider
-                            aria-label="difficulty"
-                            value={this.state.difficulty}
-                            onChange={this.handleDiffChange}
-                          />
-                          <SentimentVeryDissatisfiedIcon />
-                        </Stack>
-                        Time Spent: {formatDuration(this.state.timeStudying)}
-                        <Stack
-                          spacing={2}
-                          direction="row"
-                          sx={{ mb: 2, ml: 5, mr: 5 }}
-                          alignItems="center"
-                        >
-                          <BoltIcon />
-                          <Slider
-                            aria-label="timeStudying"
-                            value={this.state.timeStudying}
-                            onChange={this.handleDurChange}
-                            max={86400}
-                            step={300}
-                          />
-                          <AccessTimeIcon />
-                        </Stack>
-                      </div>
+                      Difficulty: {`${difficulty}%/100%`}
+                      <Stack
+                        spacing={2}
+                        direction="row"
+                        sx={{ mb: 2, ml: 5, mr: 5 }}
+                        alignItems="center"
+                      >
+                        <SentimentSatisfiedAltIcon />
+                        <Slider
+                          aria-label="difficulty"
+                          value={difficulty}
+                          onChange={handleDiffChange}
+                        />
+                        <SentimentVeryDissatisfiedIcon />
+                      </Stack>
+                      Time Spent: {formatDuration(timeStudying)}
+                      <Stack
+                        spacing={2}
+                        direction="row"
+                        sx={{ mb: 2, ml: 5, mr: 5 }}
+                        alignItems="center"
+                      >
+                        <BoltIcon />
+                        <Slider
+                          aria-label="timeStudying"
+                          value={timeStudying}
+                          onChange={handleDurChange}
+                          max={86400}
+                          step={300}
+                        />
+                        <AccessTimeIcon />
+                      </Stack>
                     </div>
-                    <Button
-                      sx={{ mr: 2 }}
-                      variant="contained"
-                      onClick={this.handleSubmit}
-                    >
-                      Post
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={this.handleSubmitLoc}
-                    >
-                      Post With Location
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
-            ) : (
-              <div>
-                <Typography variant="h6" component="div">
-                  Please <a href={"/auth/microsoft"}>login</a> to post
-                </Typography>
-              </div>
-            )
+                  </div>
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="stretch"
+                    spacing={3}
+                  >
+                    <Grid item>
+                      <Button variant="contained" onClick={handleSubmit}>
+                        Post
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleSubmitLoc}
+                      >
+                        Post With Location
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </CardContent>
+            </Card>
           ) : (
             <div>
               <Typography variant="h6" component="div">
-                Post Successful!
+                Please{" "}
+                <a
+                  href={`${process.env.REACT_APP_API_ENDPOINT}/auth/microsoft`}
+                >
+                  login
+                </a>{" "}
+                to post
               </Typography>
-              <Link to="/" class="no-link-style">
-                <Button variant="contained" color="primary">
-                  Back to Home
-                </Button>
-              </Link>
             </div>
-          )}
-        </Paper>
-      </Container>
-    );
-  }
+          )
+        ) : (
+          <div>
+            <Typography variant="h6" component="div">
+              Post Successful!
+            </Typography>
+            <Link to="/" class="no-link-style">
+              <Button variant="contained" color="primary">
+                Back to Home
+              </Button>
+            </Link>
+          </div>
+        )}
+      </Paper>
+    </Container>
+  );
 }
 
 export default geolocated({

@@ -1,8 +1,8 @@
 const express = require("express");
 const { v1: uuidv1, v4: uuidv4 } = require("uuid");
-const recordRoutes = express.Router();
-const post = require("../models/post");
-const user = require("../models/user");
+const router = express.Router();
+const Post = require("../models/post");
+const User = require("../models/user");
 
 const { processUser } = require("../utility.js");
 
@@ -12,9 +12,9 @@ const { ensureAuth, ensureAuthNoRedirect } = require("../authenticate");
 // check if post is liked by user
 async function isLikedByUser(postId, userId) {
   // check if post id is in the user's liked posts
-  let likedPosts = await user
-    .findOne({ "microsoft.id": userId })
-    .select("likedPosts");
+  let likedPosts = await User.findOne({ "microsoft.id": userId }).select(
+    "likedPosts"
+  );
 
   // if liked posts contains post id, return true
   if (likedPosts.likedPosts.includes(postId)) {
@@ -24,10 +24,59 @@ async function isLikedByUser(postId, userId) {
   }
 }
 
-recordRoutes.route("/").get(function (req, res) {
-  post
-    .find()
+router.route("/numPages").get((req, res) => {
+  // get q search parameter
+  let q = req.query.q;
+
+  // search database for posts with title or content containing q if q is not empty
+  if (!q || q === null || q === "") {
+    q = "";
+  }
+
+  Post.find({ title: { $regex: q, $options: "mi" } }).exec(async function (
+    err,
+    posts
+  ) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    } else {
+      // get number of posts returned by search
+      let numPosts = posts.length;
+
+      // return number of pages
+      res.status(200).send({ numPages: parseInt(numPosts / 5) + 1 });
+    }
+  });
+});
+
+router.route("/").get(function (req, res) {
+  // get q search parameter
+  let q = req.query.q;
+
+  // get page
+  let page = req.query.page;
+
+  if (!page) {
+    page = 1;
+  }
+
+  // check if we're getting a user's posts
+  let userid = req.query.user;
+
+  let userMatch = {};
+  if (userid !== "false") {
+    userMatch = { author_id: userid };
+  }
+
+  // search database for posts with title or content containing q if q is not empty
+  if (!q || q === null || q === "") {
+    q = "";
+  }
+
+  Post.find({ title: { $regex: q, $options: "mi" }, ...userMatch })
     .sort({ createdAt: -1 })
+    .skip((page - 1) * 5)
     .limit(5)
     .exec(async function (err, posts) {
       if (err) {
@@ -36,7 +85,7 @@ recordRoutes.route("/").get(function (req, res) {
         // loop through posts and get the user data for each post
         let postArr = [];
         for (let post of posts) {
-          let resUser = await user.findOne({
+          let resUser = await User.findOne({
             "microsoft.id": post.author_id,
           });
           let liked = false;
@@ -64,70 +113,30 @@ recordRoutes.route("/").get(function (req, res) {
     });
 });
 
-recordRoutes.route("/fetch").post(function (req, res) {
-  post.findOne({ post_id: req.body.post_id }, async function (err, findPost) {
+router.route("/fetch").post(function (req, res) {
+  Post.findOne({ post_id: req.body.post_id }, async function (err, findPost) {
     if (err) {
       res.status(400).send(`Error finding post`);
     } else {
       let userComplete = {};
       let liked = false;
-      if (ensureAuthNoRedirect(req)) {
+      if (req.user && ensureAuthNoRedirect(req)) {
         liked = await isLikedByUser(findPost.post_id, req.user.microsoft.id);
       }
-      user.findOne(
-        { microsoft: { id: findPost.author_id } },
-        function (err, user) {
-          if (err) {
-            userComplete = { post: findPost, author: null };
-          } else {
-            user = processUser(user);
-            userComplete = { post: findPost, author: user, liked: liked };
-          }
-        }
-      );
+      let user = await User.findOne({ "microsoft.id": findPost.author_id });
+      if (!user) {
+        userComplete = { post: findPost, author: null };
+        res.status(500);
+      } else {
+        user = processUser(user);
+        userComplete = { post: findPost, author: user, liked: liked };
+      }
       res.status(200).send(userComplete);
     }
   });
 });
 
-recordRoutes.route("/userposts").get(ensureAuth, function (req, res) {
-  post
-    .find({ author_id: req.user.microsoft.id })
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .exec(async function (err, posts) {
-      if (err) {
-        res.status(400).send("Error retrieving posts");
-      } else {
-        // loop through posts and get the user data for each post
-        let postArr = [];
-        for (let post of posts) {
-          let resUser = await user.findOne({ "microsoft.id": post.author_id });
-          let liked = false;
-          if (ensureAuthNoRedirect(req)) {
-            liked = await isLikedByUser(post.post_id, req.user.microsoft.id);
-          }
-          if (resUser) {
-            resUser = processUser(resUser);
-            postArr.push({
-              post: post,
-              author: resUser,
-              liked: liked,
-            });
-          } else {
-            postArr.push({
-              post: post,
-              author: null,
-              liked: liked,
-            });
-          }
-        }
-        res.status(200).send(postArr);
-      }
-    });
-});
-
-recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
+router.route("/upload").post(ensureAuth, function (req, res) {
   const doc = {
     post_id: uuidv4(),
     author_id: req.user.microsoft.id,
@@ -146,7 +155,7 @@ recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
     postType: req.body.postType,
     // need to implement test cases for if wrong format is inputted to prevent DB issues
   };
-  post.create(doc, function (error, result) {
+  Post.create(doc, function (error, result) {
     if (error) {
       console.log("Error uploading new post");
       res.status(400).send("Error uploading new post");
@@ -157,9 +166,9 @@ recordRoutes.route("/upload").post(ensureAuth, function (req, res) {
   });
 });
 
-recordRoutes.route("/changelike").post(ensureAuth, function (req, res) {
+router.route("/changelike").post(ensureAuth, function (req, res) {
   // find post in a user's likedPosts array, if it exists, remove it, if not, add it
-  user.findOne({ "microsoft.id": req.user.microsoft.id }, function (err, user) {
+  User.findOne({ "microsoft.id": req.user.microsoft.id }, function (err, user) {
     if (err) {
       res.status(400).send("Error finding user");
     } else {
@@ -168,7 +177,7 @@ recordRoutes.route("/changelike").post(ensureAuth, function (req, res) {
       if (index > -1) {
         user.likedPosts.splice(index, 1);
         // remove like from post
-        post.findOneAndUpdate(
+        Post.findOneAndUpdate(
           { post_id: req.body.post_id },
           { $inc: { likes: -1 } },
           function (err, post) {
@@ -180,7 +189,7 @@ recordRoutes.route("/changelike").post(ensureAuth, function (req, res) {
       } else {
         user.likedPosts.push(req.body.post_id);
         // add like to post
-        post.findOneAndUpdate(
+        Post.findOneAndUpdate(
           { post_id: req.body.post_id },
           { $inc: { likes: 1 } },
           function (err, post) {
@@ -200,11 +209,11 @@ recordRoutes.route("/changelike").post(ensureAuth, function (req, res) {
     }
   });
 });
-recordRoutes.route("/delete").post(ensureAuth, function (req, res) {
-  post.findOne({ post_id: req.body.post_id }, function (err, modPost) {
+router.route("/delete").post(ensureAuth, function (req, res) {
+  Post.findOne({ post_id: req.body.post_id }, function (err, modPost) {
     if (!err) {
       if (modPost.author_id == req.user.microsoft.id) {
-        post.deleteOne({ post_id: req.body.post_id }, function (err, delPost) {
+        Post.deleteOne({ post_id: req.body.post_id }, function (err, delPost) {
           if (err) {
             res.status(400).send(`Error deleting post`);
           } else {
@@ -217,9 +226,9 @@ recordRoutes.route("/delete").post(ensureAuth, function (req, res) {
     }
   });
 });
-recordRoutes.route("/time_studying").get(function (req, res) {
+router.route("/time_studying").get(function (req, res) {
   var totalAssignmentTime = 0;
-  post.find().exec(async function (err, posts) {
+  Post.find().exec(async function (err, posts) {
     if (err) {
       res.status(400).send("Error retrieving posts");
     } else {
@@ -235,4 +244,4 @@ recordRoutes.route("/time_studying").get(function (req, res) {
   });
 });
 
-module.exports = recordRoutes;
+module.exports = router;

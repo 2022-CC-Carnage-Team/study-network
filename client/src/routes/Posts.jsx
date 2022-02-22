@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import ReactMapboxGl, { Layer, Marker } from "react-mapbox-gl";
 
@@ -14,6 +14,7 @@ import {
   Avatar,
   Grid,
   Stack,
+  Tooltip,
 } from "@mui/material";
 
 import { formatDuration } from "../utility";
@@ -33,17 +34,16 @@ const Map = ReactMapboxGl({
     "pk.eyJ1IjoibmxhaGEiLCJhIjoiY2s2YnR3aTViMTVkODNqbGpvcmQ4cXNkNSJ9.tv42gtwJFcNy3sjYxrPopg",
 });
 
-class PostCard extends Component {
-  state = {
-    author: this.props.author,
-    contents: this.props.contents,
-    likeStatus: this.props.liked,
-    deleted: false,
-  };
+function PostCard(props) {
+  const [author, setAuthor] = useState(props.author);
+  const [contents, setContents] = useState(props.contents);
+  const [likes, setLikes] = useState(props.contents.likes);
+  const [likeStatus, setLikeStatus] = useState(props.liked);
+  const [deleted, setDeleted] = useState(false);
 
-  handleLike = () => {
-    let likeStatusNew = !this.state.likeStatus;
-    this.setState({ likeStatus: likeStatusNew });
+  const handleLike = () => {
+    let likeStatusNew = !likeStatus;
+    setLikeStatus(likeStatusNew);
     // make post request to server
     fetch("/posts/changelike", {
       method: "POST",
@@ -51,21 +51,16 @@ class PostCard extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        post_id: this.state.contents.post_id,
+        post_id: contents.post_id,
         change_like: likeStatusNew,
       }),
     });
 
     // update like count
-    this.setState({
-      contents: {
-        ...this.state.contents,
-        likes: this.state.contents.likes + (likeStatusNew ? 1 : -1),
-      },
-    });
+    setLikes(likeStatusNew ? likes + 1 : likes - 1);
   };
 
-  handleDelete = () => {
+  const handleDelete = () => {
     // make post request to server
     fetch("/posts/delete", {
       method: "POST",
@@ -73,171 +68,192 @@ class PostCard extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        post_id: this.state.contents.post_id,
+        post_id: contents.post_id,
       }),
     });
 
     // deleted
-    this.setState({
-      deleted: true,
-    });
+    setDeleted(true);
   };
 
-  render() {
-    console.log(this.state);
-    return (
-      <div>
-        {this.state.deleted == false ? (
-          <Card variant="outlined" className="secondary-card top-margin">
-            <CardContent>
-              <Typography variant="h5" component="h2">
-                Assignment: <b>{this.state.contents.title}</b>
+  useEffect(async () => {
+    setAuthor(props.author);
+    setContents(props.contents);
+    setLikes(props.contents.likes);
+    setLikeStatus(props.liked);
+  }, [props]);
+
+  return (
+    <div>
+      {deleted == false ? (
+        <Card
+          key={props.key}
+          variant="outlined"
+          className="secondary-card top-margin"
+        >
+          <CardContent>
+            <Link to={"/post/" + contents.post_id}>
+              <Typography variant="h5" component="h2" className="red-text">
+                Assignment: <b>{contents.title}</b>
               </Typography>
-              <Typography variant="h5" component="h2">
-                Class: <b>{this.state.contents.class}</b>
-              </Typography>
-              <Typography variant="h6" component="h5">
-                Assignment Description:
-              </Typography>
-              <Typography component="p">
-                {this.state.contents.description}
-              </Typography>
-              <Typography variant="h6" component="h5">
-                Assignment Difficulty:
-              </Typography>
-              <Stack
-                spacing={2}
-                direction="row"
-                alignItems="center"
-                sx={{ mt: "0.75rem" }}
-              >
-                <SentimentSatisfiedAltIcon />
-                <LinearProgress
-                  className="difficulty-meter"
-                  size={40}
-                  thickness={4}
-                  variant="determinate"
-                  value={this.state.contents.difficulty}
-                  sx={{ minWidth: "200px", maxWidth: "500px" }}
-                />
-                <SentimentVeryDissatisfiedIcon />
-              </Stack>
-              <Typography variant="h6" component="h5">
-                Assignment Duration:
-              </Typography>
-              <Typography variant="p" component="p">
-                {formatDuration(this.state.contents.timeStudying)}
-              </Typography>
-              {this.state.contents.coordinates &&
-              this.state.contents.coordinates[0] != 0 &&
-              this.state.contents.coordinates[1] != 0 &&
-              this.state.contents.coordinates[0] != null &&
-              this.state.contents.coordinates[1] != null ? (
-                <Paper className="padding-margin map" variant="outlined">
-                  <Map
-                    style="mapbox://styles/mapbox/dark-v9"
-                    containerStyle={{
-                      height: "180px",
-                      width: "100%",
-                      borderRadius: "10px",
-                    }}
-                    zoom={[15]}
-                    center={[
-                      this.props.contents.coordinates[1],
-                      this.props.contents.coordinates[0],
+            </Link>
+            <Typography variant="h5" component="h2">
+              Class: <b>{contents.class}</b>
+            </Typography>
+            <Typography variant="h6" component="h5">
+              Assignment Description:
+            </Typography>
+            <Typography component="p">{contents.description}</Typography>
+            <Typography variant="h6" component="h5">
+              Assignment Difficulty:
+            </Typography>
+            <Stack
+              spacing={2}
+              direction="row"
+              alignItems="center"
+              sx={{ mt: "0.75rem" }}
+            >
+              <SentimentSatisfiedAltIcon />
+              <LinearProgress
+                className="difficulty-meter"
+                size={40}
+                thickness={4}
+                variant="determinate"
+                value={contents.difficulty}
+                sx={{ minWidth: "200px", maxWidth: "500px" }}
+              />
+              <SentimentVeryDissatisfiedIcon />
+            </Stack>
+            <Typography variant="h6" component="h5">
+              Assignment Duration:
+            </Typography>
+            <Typography variant="p" component="p">
+              {formatDuration(contents.timeStudying)}
+            </Typography>
+            {contents.coordinates &&
+            contents.coordinates[0] != 0 &&
+            contents.coordinates[1] != 0 &&
+            contents.coordinates[0] != null &&
+            contents.coordinates[1] != null ? (
+              <Paper className="padding-margin map" variant="outlined">
+                <Map
+                  style="mapbox://styles/mapbox/dark-v9"
+                  containerStyle={{
+                    height: "180px",
+                    width: "100%",
+                    borderRadius: "10px",
+                  }}
+                  zoom={[15]}
+                  center={[
+                    props.contents.coordinates[1],
+                    props.contents.coordinates[0],
+                  ]}
+                >
+                  <Marker
+                    coordinates={[
+                      props.contents.coordinates[1],
+                      props.contents.coordinates[0],
                     ]}
+                    anchor="bottom"
                   >
-                    <Marker
-                      coordinates={[
-                        this.props.contents.coordinates[1],
-                        this.props.contents.coordinates[0],
-                      ]}
-                      anchor="bottom"
-                    >
-                      <PersonPinIcon className="person-marker" />
-                    </Marker>
-                  </Map>
-                </Paper>
-              ) : (
-                <React.Fragment></React.Fragment>
-              )}
-              <Paper className="padding-margin" variant="outlined">
-                {this.state.author ? (
-                  <Grid
-                    container
-                    justifyContent="flex-start"
-                    direction="row"
-                    alignItems="center"
-                  >
-                    <Grid item xs={2}>
-                      <Avatar>
-                        <Avatar
-                          alt={this.state.author.firstName}
-                          src={this.state.author.microsoft.profilePic}
-                        />
-                      </Avatar>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <a
-                        className="no-link-style"
-                        href={`mailto:${this.state.author.microsoft.email}`}
-                      >
-                        <Button variant="primary">
-                          {this.state.author.firstName}{" "}
-                          {this.state.author.lastName}
-                        </Button>
-                      </a>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Typography variant="p" component="p">
-                    Unknown User
-                  </Typography>
-                )}
+                    <PersonPinIcon className="person-marker" />
+                  </Marker>
+                </Map>
               </Paper>
-            </CardContent>
-            <CardActions>
+            ) : (
+              <React.Fragment></React.Fragment>
+            )}
+            <Paper className="padding-margin" variant="outlined">
+              {author ? (
+                <Grid
+                  container
+                  justifyContent="flex-start"
+                  direction="row"
+                  alignItems="flex-start"
+                  sx={{ textAlign: "left" }}
+                  spacing={2}
+                >
+                  <Grid item>
+                    <Avatar>
+                      <Avatar
+                        alt={author.firstName}
+                        src={author.microsoft.profilePic}
+                      />
+                    </Avatar>
+                  </Grid>
+                  <Grid item>
+                    <Tooltip title="View Profile">
+                      <Link
+                        className="no-link-style"
+                        to={`/profile/${author.microsoft.id}`}
+                      >
+                        <Button variant="outlined">
+                          {author.firstName} {author.lastName}
+                        </Button>
+                      </Link>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+              ) : (
+                <Typography variant="p" component="p">
+                  Unknown User
+                </Typography>
+              )}
+            </Paper>
+          </CardContent>
+          <CardActions>
+            <Tooltip title="Like">
               <IconButton
-                className={this.state.likeStatus ? "liked" : ""}
+                className={likeStatus ? "liked" : "likeBtn"}
                 aria-label="like"
-                onClick={this.handleLike}
+                onClick={handleLike}
               >
                 <FavoriteIcon />
               </IconButton>
-              <Typography variant="h6" component="h5">
-                {this.state.contents.likes}
-              </Typography>
-              <IconButton aria-label="share">
+            </Tooltip>
+            <Typography variant="h6" component="h5">
+              {likes}
+            </Typography>
+            <Tooltip title="Copy Link">
+              <IconButton
+                aria-label="share"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    window.location.origin + "/post/" + contents.post_id
+                  );
+                }}
+              >
                 <ShareIcon />
               </IconButton>
-              {this.props.owned ? (
-                <IconButton aria-label="delete" onClick={this.handleDelete}>
+            </Tooltip>
+            {props.owned ? (
+              <Tooltip title="Delete">
+                <IconButton aria-label="delete" onClick={handleDelete}>
                   <DeleteForeverIcon />
                 </IconButton>
-              ) : (
-                ""
-              )}
-              <Grid
-                container
-                direction="row"
-                justifyContent="flex-end"
-                alignItems="flex-end"
-              >
-                <Grid item xs>
-                  <Typography className="align-right soft-text">
-                    Posted:{" "}
-                    {new Date(this.state.contents.createdAt).toLocaleString()}
-                  </Typography>
-                </Grid>
+              </Tooltip>
+            ) : (
+              ""
+            )}
+            <Grid
+              container
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="flex-end"
+            >
+              <Grid item xs>
+                <Typography className="align-right soft-text">
+                  Posted: {new Date(contents.createdAt).toLocaleString()}
+                </Typography>
               </Grid>
-            </CardActions>
-          </Card>
-        ) : (
-          <React.Fragment></React.Fragment>
-        )}
-      </div>
-    );
-  }
+            </Grid>
+          </CardActions>
+        </Card>
+      ) : (
+        <React.Fragment></React.Fragment>
+      )}
+    </div>
+  );
 }
 
 export default PostCard;

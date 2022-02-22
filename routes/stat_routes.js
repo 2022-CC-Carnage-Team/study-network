@@ -31,6 +31,19 @@ router.get("/global", async (req, res) => {
     },
   ]);
 
+  if (!numPosts) {
+    numPosts = 0;
+  }
+  if (!numUsers) {
+    numUsers = 0;
+  }
+  if (!totalTime || !totalTime[0].totalTime) {
+    totalTime[0].totalTime = 0;
+  }
+  if (!avgTime || !avgTime[0].avgTime) {
+    avgTime[0].avgTime = 0;
+  }
+
   res.status(200).send({
     numPosts: numPosts,
     numUsers: numUsers,
@@ -40,14 +53,19 @@ router.get("/global", async (req, res) => {
 });
 
 router.get("/user", ensureAuth, async (req, res) => {
-  // get number of posts
+  // get user id from query
+  let userId = req.query.id;
 
+  // get number of posts
   var numPosts = await post.countDocuments({
-    author_id: req.user.microsoft.id,
+    author_id: userId,
   });
 
   // group time spent on study by day
   let timeByDay = await post.aggregate([
+    {
+      $match: { author_id: userId },
+    },
     {
       $group: {
         _id: {
@@ -64,7 +82,7 @@ router.get("/user", ensureAuth, async (req, res) => {
   // get total time spent on study for user
   let totalTime = await post.aggregate([
     {
-      $match: { author_id: req.user.microsoft.id },
+      $match: { author_id: userId },
     },
     {
       $group: {
@@ -76,7 +94,7 @@ router.get("/user", ensureAuth, async (req, res) => {
   // get average time spent on study for user
   let avgTime = await post.aggregate([
     {
-      $match: { author_id: req.user.microsoft.id },
+      $match: { author_id: userId },
     },
     {
       $group: {
@@ -87,10 +105,18 @@ router.get("/user", ensureAuth, async (req, res) => {
   ]);
 
   // if any of these are undefined, set them to 0
-  timeByDay === undefined ? timeByDay : 0;
-  numPosts === undefined ? numPosts : 0;
-  totalTime === undefined ? totalTime : [0];
-  avgTime === undefined ? avgTime : [0];
+  if (!timeByDay) {
+    timeByDay = [];
+  }
+  if (!numPosts) {
+    numPosts = 0;
+  }
+  if (!totalTime || !totalTime[0] || !totalTime[0].totalTime) {
+    totalTime = [{ totalTime: 0 }];
+  }
+  if (!avgTime || !avgTime[0] || !avgTime[0].avgTime) {
+    avgTime = [{ avgTime: 0 }];
+  }
 
   res.status(200).send({
     timeByDay: timeByDay,

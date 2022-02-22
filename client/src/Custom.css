@@ -71,6 +71,22 @@ h6 {
 
 .liked {
   color: #ff3961 !important;
+  transform: scale(1);
+  animation: pulse 1s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .site-title {
@@ -108,7 +124,7 @@ h6 {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ca1237;
+  background: #a60f2d;
 }
 
 .map {
@@ -121,6 +137,27 @@ h6 {
 
 .person-marker {
   background-color: #0e0e0e;
-  color: #ca1237;
+  color: #a60f2d;
   border-radius: 50%;
+}
+
+.App {
+  margin-top: 5rem;
+}
+
+.site-logo {
+  width: 4rem;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0.5rem;
+  margin-right: 2rem;
+}
+
+a {
+  color: #a60f2d;
+}
+
+.red-text {
+  color: #a60f2d !important;
 }

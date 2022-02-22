@@ -1,15 +1,28 @@
-import React, { Component } from "react";
-// use state
-import { useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Link, useSearchParams } from "react-router-dom";
 import "./Custom.css";
 
 import { Home } from "./routes/Home";
 import { Profile } from "./routes/Profile";
 import NewPost from "./routes/NewPost";
 
-import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
+import {
+  createTheme,
+  ThemeProvider,
+  styled,
+  alpha,
+} from "@mui/material/styles";
 import { SNAppBar } from "./SNAppBar";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { SinglePost } from "./routes/SinglePost";
+
+import InputBase from "@mui/material/InputBase";
+import SearchIcon from "@mui/icons-material/Search";
+import SiteLogo from "./wsusn_logo.svg";
+import ClearIcon from "@mui/icons-material/Clear";
+import IconButton from "@mui/material/IconButton";
+
+import { Paper, TextField, Container, Stack, Tooltip } from "@mui/material";
 
 export const theme = createTheme({
   typography: {
@@ -35,24 +48,37 @@ export const theme = createTheme({
     },
   },
   spacing: 8,
+  padding: {
+    default: "1rem",
+  },
+  margin: {
+    default: "1rem",
+  },
   shape: {
     borderRadius: 10,
   },
 });
 
-class App extends Component {
-  state = {
-    user: null,
-  };
+function App() {
+  const [user, setUser] = useState(null);
+  let [searchParams, setSearchParams] = useSearchParams();
+  let [searchField, setSearchField] = useState("");
 
-  componentDidMount() {
-    this.callBackendAPI()
-      .then((res) => this.setState({ user: res.user }))
+  useEffect(() => {
+    if (mobile) {
+      theme.padding = "0.5rem";
+      theme.margin = "0.5rem";
+    }
+
+    setSearchField("");
+
+    callBackendAPI()
+      .then((res) => setUser(res.user))
       .catch((err) => console.log(err));
-  }
+  }, []);
 
   // fetching the GET route from the Express server which matches the GET route from server.js
-  callBackendAPI = async () => {
+  const callBackendAPI = async () => {
     const response = await fetch(`/users/me`);
     const body = await response.json();
 
@@ -63,28 +89,86 @@ class App extends Component {
     return body;
   };
 
-  render() {
-    return (
-      <ThemeProvider theme={theme}>
-        <SNAppBar user={this.state.user} />
-        <div className="App">
-          <Routes>
-            <Route path="/" element={<Home user={this.state.user} />} />
-            <Route
-              path="profile"
-              element={<Profile user={this.state.user} />}
-            />
-            <Route path="post" element={<NewPost user={this.state.user} />} />
-          </Routes>
-        </div>
-        <footer className="footer">
-          <p className="copyright">
-            Copyright © {new Date().getFullYear()} Team Carnage
-          </p>
-        </footer>
-      </ThemeProvider>
-    );
-  }
+  const mobile = useMediaQuery("(min-width:600px)");
+
+  const handleSearch = (q) => {
+    console.log("Searching for: ", q);
+    if (q !== "" && q !== null) {
+      setSearchParams({ q });
+    }
+  };
+
+  const handleSearchClear = (event) => {
+    event.preventDefault();
+    console.log("Clearing search");
+    // remove search params
+    setSearchParams({});
+    setSearchField("");
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <SNAppBar user={user} />
+      <div className="App">
+        <Container maxWidth="lg">
+          <Paper
+            className="page-container"
+            sx={{ p: "0.1rem", pb: "1rem", pl: "1rem" }}
+          >
+            <Stack
+              spacing={2}
+              direction="row"
+              alignItems="center"
+              sx={{ mt: "0.75rem" }}
+            >
+              <Tooltip title="Search">
+                <IconButton
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    handleSearch(searchField);
+                  }}
+                >
+                  <SearchIcon />
+                </IconButton>
+              </Tooltip>
+              <TextField
+                value={searchField}
+                onChange={(ev) => {
+                  setSearchField(ev.target.value);
+                }}
+                onKeyPress={(ev) => {
+                  if (ev.key === "Enter") {
+                    // Do code here
+                    ev.preventDefault();
+                    handleSearch(ev.target.value);
+                  }
+                }}
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+              <Tooltip title="Clear search">
+                <IconButton onClick={handleSearchClear}>
+                  <ClearIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          </Paper>
+        </Container>
+        <Routes>
+          <Route path="/" element={<Home user={user} />} />
+          <Route path="profile" element={<Profile user={user} />} />
+          <Route path="profile/:userid" element={<Profile />} />
+          <Route path="post" element={<NewPost user={user} />} />
+          <Route path="post/:postid" element={<SinglePost />} />
+        </Routes>
+      </div>
+      <footer className="footer">
+        <p className="copyright">
+          Copyright © {new Date().getFullYear()} Team Carnage
+        </p>
+      </footer>
+    </ThemeProvider>
+  );
 }
 
 export default App;

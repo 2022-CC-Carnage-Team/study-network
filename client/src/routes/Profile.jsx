@@ -1,5 +1,11 @@
-import React, { Component } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {
+  Routes,
+  Route,
+  Link,
+  useSearchParams,
+  useParams,
+} from "react-router-dom";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import {
@@ -11,38 +17,82 @@ import {
   Avatar,
   CardContent,
 } from "@mui/material";
-import { Grid, Button } from "@mui/material";
-
-import PostCard from "./Posts";
+import { Grid } from "@mui/material";
 
 import { UserHeatmap } from "./Heatmap";
 
 import { formatDuration } from "../utility";
 
-class Profile extends Component {
-  state = {
-    userPosts: null,
-    stats: {
-      timeByDay: [],
-      numPosts: 0,
-      numUsers: 0,
-      totalTime: 0,
-      avgTime: 0,
+import PostList from "./PostList";
+
+function Profile(props) {
+  const [userPosts, setUserPosts] = useState();
+  const [stats, setStats] = useState({
+    numPosts: 0,
+    numUsers: 0,
+    totalTime: 0,
+    avgTime: 0,
+    timeByDay: [],
+  });
+  let [searchParams, setSearchParams] = useSearchParams();
+  let [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
+    microsoft: {
+      email: "",
+      id: "",
+      profilePic: "",
     },
+    likedPosts: [],
+  });
+  const { userid } = useParams();
+
+  useEffect(async () => {
+    let res = [];
+    let newUser = {};
+    if (!props.user) {
+      // if userid then fetch user from api
+      if (userid) {
+        let fuser = await fetch(`/users/fetch?id=${userid}`);
+        fuser = await fuser.json();
+        newUser = fuser.user;
+        setUser(fuser.user);
+      }
+    } else {
+      setUser(props.user);
+      newUser = props.user;
+    }
+
+    res = await callBackendAPI(newUser);
+    setUserPosts(res);
+
+    res = await getStats();
+    setStats(res);
+  }, [userid, props.user, searchParams]);
+
+  // fetching the GET route from the Express server which matches the GET route from server.js
+  const callBackendAPI = async (newUser) => {
+    if (newUser && newUser.microsoft) {
+      let recentUrl = `/posts?page=${searchParams.get("page")}&user=${
+        newUser.microsoft.id
+      }`;
+      let searchUrl = `/posts?q=${searchParams.get(
+        "q"
+      )}&page=${searchParams.get("page")}&user=${newUser.microsoft.id}`;
+      const response = await fetch(
+        searchParams.get("q") ? searchUrl : recentUrl
+      );
+      const body = await response.json();
+
+      if (response.status !== 200) {
+        throw Error(body.message);
+      }
+      return body;
+    }
   };
 
-  componentDidMount() {
-    this.callBackendAPI()
-      .then((res) => this.setState({ userPosts: res }))
-      .catch((err) => console.log(err));
-
-    this.getStats()
-      .then((res) => this.setState({ stats: res }))
-      .catch((err) => console.log(err));
-  }
-
-  callBackendAPI = async () => {
-    const response = await fetch(`/posts/userposts`);
+  const getStats = async () => {
+    const response = await fetch(`/stats/user?id=${user.microsoft.id}`);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -51,120 +101,82 @@ class Profile extends Component {
     return body;
   };
 
-  getStats = async () => {
-    const response = await fetch(`/stats/user`);
-    const body = await response.json();
-
-    if (response.status !== 200) {
-      throw Error(body.message);
-    }
-    return body;
-  };
-
-  render() {
-    return (
-      <Container maxWidth="lg">
-        {this.props.user ? (
-          <Paper className="page-container">
-            <Typography variant="h4" component="h4" gutterBottom>
-              Profile
-            </Typography>
-            <Card className="user-card">
-              <CardHeader
-                avatar={
-                  <Avatar
-                    alt={this.props.user.firstName}
-                    src={this.props.user.microsoft.profilePic}
-                  />
-                }
-                title={`${this.props.user.firstName} ${this.props.user.lastName}`}
-                subheader={this.props.user.microsoft.email}
-              />
-              <CardMedia className="profile-image" title="Profile Image" />
-            </Card>
-            <Card variant="outlined" className="secondary-card top-margin">
-              <CardContent>
-                <UserHeatmap data={this.state.stats.timeByDay} />
-              </CardContent>
-            </Card>
-            <Typography variant="h4" component="h4">
-              User Study Stats
-            </Typography>
-            <Card variant="outlined" className="secondary-card top-margin">
-              <CardContent>
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="left"
-                  alignItems="center"
-                >
-                  <Grid item xs={5}>
-                    <Typography variant="h6" component="h2">
-                      Total Posts: {this.state.stats.numPosts}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={5}>
-                    <Typography variant="h6" component="h2">
-                      Total Study Time:{" "}
-                      {formatDuration(this.state.stats.totalTime)}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={5}>
-                    <Typography variant="h6" component="h2">
-                      Average Study Time:{" "}
-                      {formatDuration(this.state.stats.avgTime)}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-            {this.state.userPosts ? (
-              <div>
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="flex-end"
-                >
-                  <Grid item xs>
-                    <Typography variant="h4" component="h4" gutterBottom>
-                      Posts
-                    </Typography>
-                  </Grid>
-                  <Link to="/post" className="no-link-style">
-                    <Button variant="contained">New Post</Button>
-                  </Link>
-                </Grid>
-                {this.state.userPosts.map((post) => (
-                  <PostCard
-                    owned={true}
-                    author={post.author}
-                    contents={post.post}
-                    liked={post.liked}
-                  />
-                ))}
-              </div>
-            ) : (
-              <Typography
-                variant="h5"
-                align="center"
-                component="h5"
-                gutterBottom
+  return (
+    <Container maxWidth="lg">
+      {user ? (
+        <Paper className="page-container">
+          <Typography variant="h4" component="h4" gutterBottom>
+            Profile
+          </Typography>
+          <Card className="user-card">
+            <CardHeader
+              avatar={
+                <Avatar alt={user.firstName} src={user.microsoft.profilePic} />
+              }
+              title={`${user.firstName} ${user.lastName}`}
+              subheader={user.microsoft.email}
+            />
+            <CardMedia className="profile-image" title="Profile Image" />
+          </Card>
+          <Card variant="outlined" className="secondary-card top-margin">
+            <CardContent>
+              <Grid
+                container
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+                spacing={3}
               >
-                No posts yet!
-              </Typography>
-            )}
-          </Paper>
-        ) : (
-          <Paper className="page-container">
-            <Typography variant="h5" align="center" component="h5" gutterBottom>
-              Loading...
-            </Typography>
-          </Paper>
-        )}
-      </Container>
-    );
-  }
+                <Grid item lg>
+                  <Typography variant="h5" component="h5">
+                    Study Time
+                  </Typography>
+                  <UserHeatmap data={stats.timeByDay} />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+          <Typography variant="h4" component="h4">
+            User Study Stats
+          </Typography>
+          <Card variant="outlined" className="secondary-card top-margin">
+            <CardContent>
+              <Grid
+                container
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="stretch"
+                spacing={3}
+              >
+                <Grid item lg={8}>
+                  <Typography variant="h6" component="h2">
+                    <b>Total Posts:</b> {stats.numPosts}
+                  </Typography>
+                </Grid>
+                <Grid item lg={8}>
+                  <Typography variant="h6" component="h2">
+                    <b>Total Study Time:</b> {formatDuration(stats.totalTime)}
+                  </Typography>
+                </Grid>
+                <Grid item lg={8}>
+                  <Typography variant="h6" component="h2">
+                    <b>Average Study Time:</b> {formatDuration(stats.avgTime)}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+          <PostList posts={userPosts} owned={props.user} />
+        </Paper>
+      ) : (
+        <Paper className="page-container">
+          <Typography variant="h5" align="center" component="h5" gutterBottom>
+            Loading...
+          </Typography>
+        </Paper>
+      )}
+    </Container>
+  );
 }
 
 export { Profile };

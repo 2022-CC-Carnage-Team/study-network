@@ -1,48 +1,40 @@
-import React, { Component } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import { Paper, Grid, Button, Card, CardContent } from "@mui/material";
-
-import PostCard from "./Posts";
+import { Paper, Grid, Card, CardContent } from "@mui/material";
 
 import { formatDuration } from "../utility";
 
-const user = {
-  firstName: "Example",
-  lastName: "User",
-  microsoft: {
-    profilePic:
-      "https://pbs.twimg.com/profile_images/1465047742338646019/a54vdnaQ_400x400.jpg",
-    email: "test@example.com",
-  },
-};
+import PostList from "./PostList";
 
-class Home extends Component {
-  state = {
-    recentPosts: null,
-    stats: {
-      numPosts: 0,
-      numUsers: 0,
-      totalTime: 0,
-      avgTime: 0,
-    },
-  };
+function Home() {
+  const [recentPosts, setRecentPosts] = useState();
+  const [stats, setStats] = useState({
+    numPosts: 0,
+    numUsers: 0,
+    totalTime: 0,
+    avgTime: 0,
+  });
+  let [searchParams, setSearchParams] = useSearchParams();
 
-  componentDidMount() {
-    this.callBackendAPI()
-      .then((res) => this.setState({ recentPosts: res }))
-      .catch((err) => console.log(err));
+  useEffect(async () => {
+    console.log(searchParams);
+    let res = await callBackendAPI();
+    setRecentPosts(res);
 
-    this.getStats()
-      .then((res) => this.setState({ stats: res }))
-      .catch((err) => console.log(err));
-  }
+    res = await getStats();
+    setStats(res);
+  }, [searchParams.get("q"), searchParams.get("page")]);
 
   // fetching the GET route from the Express server which matches the GET route from server.js
-  callBackendAPI = async () => {
-    const response = await fetch(`/posts`);
+  const callBackendAPI = async () => {
+    let recentUrl = `/posts?page=${searchParams.get("page")}&user=false`;
+    let searchUrl = `/posts?q=${searchParams.get("q")}&page=${searchParams.get(
+      "page"
+    )}&user=false`;
+    const response = await fetch(searchParams.get("q") ? searchUrl : recentUrl);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -51,7 +43,7 @@ class Home extends Component {
     return body;
   };
 
-  getStats = async () => {
+  const getStats = async () => {
     const response = await fetch(`/stats/global`);
     const body = await response.json();
 
@@ -61,80 +53,48 @@ class Home extends Component {
     return body;
   };
 
-  render() {
-    return (
-      <Container maxWidth="lg">
-        <Paper className="page-container">
-          <Typography variant="h4" component="h4">
-            Coug Study Stats
-          </Typography>
-          <Card variant="outlined" className="secondary-card top-margin">
-            <CardContent>
-              <Grid
-                container
-                direction="row"
-                justifyContent="left"
-                alignItems="center"
-              >
-                <Grid item xs={5}>
-                  <Typography variant="h6" component="h2">
-                    Total Posts: {this.state.stats.numPosts}
-                  </Typography>
-                </Grid>
-                <Grid item xs={5}>
-                  <Typography variant="h6" component="h2">
-                    Total Cougs: {this.state.stats.numUsers}
-                  </Typography>
-                </Grid>
-                <Grid item xs={5}>
-                  <Typography variant="h6" component="h2">
-                    Total Study Time:{" "}
-                    {formatDuration(this.state.stats.totalTime)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={5}>
-                  <Typography variant="h6" component="h2">
-                    Average Study Time:{" "}
-                    {formatDuration(this.state.stats.avgTime)}
-                  </Typography>
-                </Grid>
+  return (
+    <Container maxWidth="lg">
+      <Paper className="page-container">
+        <Typography variant="h4" component="h4">
+          Coug Study Stats
+        </Typography>
+        <Card variant="outlined" className="secondary-card top-margin">
+          <CardContent>
+            <Grid
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="stretch"
+              spacing={3}
+            >
+              <Grid item lg={2}>
+                <Typography variant="h6" component="h6">
+                  <b>Total Posts:</b> {stats.numPosts}
+                </Typography>
               </Grid>
-            </CardContent>
-          </Card>
-          {this.state.recentPosts ? (
-            <div>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-between"
-                alignItems="flex-end"
-              >
-                <Grid item xs>
-                  <Typography variant="h4" component="h4" gutterBottom>
-                    Recent Posts
-                  </Typography>
-                </Grid>
-                <Link to="/post" className="no-link-style">
-                  <Button variant="contained">New Post</Button>
-                </Link>
+              <Grid item lg={8}>
+                <Typography variant="h6" component="h6">
+                  <b>Total Cougs:</b> {stats.numUsers}
+                </Typography>
               </Grid>
-              {this.state.recentPosts.map((post) => (
-                <PostCard
-                  author={post.author}
-                  contents={post.post}
-                  liked={post.liked}
-                />
-              ))}
-            </div>
-          ) : (
-            <Typography variant="h5" align="center" component="h5" gutterBottom>
-              Loading...
-            </Typography>
-          )}
-        </Paper>
-      </Container>
-    );
-  }
+              <Grid item lg={8}>
+                <Typography variant="h6" component="h6">
+                  <b>Total Study Time:</b> {formatDuration(stats.totalTime)}
+                </Typography>
+              </Grid>
+              <Grid item lg={8}>
+                <Typography variant="h6" component="h6">
+                  <b>Average Study Time:</b> {formatDuration(stats.avgTime)}
+                </Typography>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+        <PostList posts={recentPosts} />
+      </Paper>
+    </Container>
+  );
 }
 
 export { Home };
