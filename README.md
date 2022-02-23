@@ -1,4 +1,4 @@
-# study-network
+# coug-study-network
 The backend + frontend for the study network
 
 ## Development Setup
