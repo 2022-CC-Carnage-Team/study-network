@@ -143,7 +143,8 @@ function App() {
       </div>
       <footer className="footer">
         <p className="copyright">
-          Copyright © {new Date().getFullYear()} Team Carnage
+          Copyright © {new Date().getFullYear()} Team Carnage &{" "}
+          <a href="https://nlaha.com">Nathan Laha</a>
         </p>
       </footer>
     </ThemeProvider>
