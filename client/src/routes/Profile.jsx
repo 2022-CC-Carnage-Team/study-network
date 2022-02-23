@@ -90,7 +90,7 @@ function Profile(props) {
     const response = await fetch(
       `/stats/user?id=${newUser.microsoft.id}&timezone=${
         //get current timezone from browser
-        new Date().getTimezoneOffset()
+        Intl.DateTimeFormat().resolvedOptions().timeZone
       }`
     );
     const body = await response.json();
