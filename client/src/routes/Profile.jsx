@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Routes,
-  Route,
-  Link,
-  useSearchParams,
-  useParams,
-} from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import {
@@ -13,7 +7,6 @@ import {
   Card,
   CardHeader,
   CardMedia,
-  IconButton,
   Avatar,
   CardContent,
 } from "@mui/material";
@@ -63,36 +56,43 @@ function Profile(props) {
       newUser = props.user;
     }
 
-    res = await callBackendAPI(newUser);
-    setUserPosts(res);
+    if (newUser && newUser.microsoft) {
+      res = await callBackendAPI(newUser);
+      setUserPosts(res);
+    }
 
-    res = await getStats(newUser);
-    setStats(res);
+    if (newUser && newUser.microsoft) {
+      res = await getStats(newUser);
+      setStats(res);
+    }
   }, [userid, props.user, searchParams]);
 
   // fetching the GET route from the Express server which matches the GET route from server.js
+  // precondition, newUser must be valid
   const callBackendAPI = async (newUser) => {
-    if (newUser && newUser.microsoft) {
-      let recentUrl = `/posts?page=${searchParams.get("page")}&user=${
-        newUser.microsoft.id
-      }`;
-      let searchUrl = `/posts?q=${searchParams.get(
-        "q"
-      )}&page=${searchParams.get("page")}&user=${newUser.microsoft.id}`;
-      const response = await fetch(
-        searchParams.get("q") ? searchUrl : recentUrl
-      );
-      const body = await response.json();
+    let recentUrl = `/posts?page=${searchParams.get("page")}&user=${
+      newUser.microsoft.id
+    }`;
+    let searchUrl = `/posts?q=${searchParams.get("q")}&page=${searchParams.get(
+      "page"
+    )}&user=${newUser.microsoft.id}`;
+    const response = await fetch(searchParams.get("q") ? searchUrl : recentUrl);
+    const body = await response.json();
 
-      if (response.status !== 200) {
-        throw Error(body.message);
-      }
-      return body;
+    if (response.status !== 200) {
+      throw Error(body.message);
     }
+    return body;
   };
 
+  // precondition, newUser must be valid
   const getStats = async (newUser) => {
-    const response = await fetch(`/stats/user?id=${newUser.microsoft.id}`);
+    const response = await fetch(
+      `/stats/user?id=${newUser.microsoft.id}&timezone=${
+        //get current timezone from browser
+        new Date().getTimezoneOffset()
+      }`
+    );
     const body = await response.json();
 
     if (response.status !== 200) {

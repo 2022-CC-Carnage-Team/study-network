@@ -6,7 +6,7 @@
 body,
 html {
   background-color: #0e0e0e !important;
-  background-image: url("../public/wsu_pattern.svg") !important;
+  background-image: url("../public/bg1.0x.png") !important;
   background-position: center !important;
   background-size: calc(max(100%, 1000px));
 }
@@ -28,6 +28,13 @@ body {
   margin-top: 1rem;
 }
 
+/* media query for page container padding */
+@media (max-width: 600px) {
+  .page-container {
+    padding: 0.2rem !important;
+  }
+}
+
 .secondary-card {
   background-color: #151515 !important;
 }
@@ -38,7 +45,7 @@ body {
 
 .difficulty-meter {
   max-width: 25rem;
-  height: 20px !important;
+  height: 10px !important;
   border-radius: 10px;
 }
 
@@ -77,15 +84,15 @@ h6 {
 
 @keyframes pulse {
   0% {
-    transform: scale(1);
+    transform: rotate3d(0, 1, 0, 0) scale(1);
   }
 
   50% {
-    transform: scale(1.9);
+    transform: rotate3d(0, 1, 0, 360deg) scale(1.5);
   }
 
   100% {
-    transform: scale(1);
+    transform: rotate3d(0, 1, 0, 0) scale(1);
   }
 }
 

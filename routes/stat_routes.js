@@ -55,6 +55,7 @@ router.get("/global", async (req, res) => {
 router.get("/user", async (req, res) => {
   // get user id from query
   let userId = req.query.id;
+  let clientTimezone = req.query.timezone;
 
   // get number of posts
   var numPosts = await post.countDocuments({
@@ -70,8 +71,9 @@ router.get("/user", async (req, res) => {
       $group: {
         _id: {
           $dateToString: {
-            format: "%Y-%m-%d",
+            format: "%Y/%m/%d",
             date: "$createdAt",
+            timezone: clientTimezone,
           },
         },
         totalTime: { $sum: "$timeStudying" },

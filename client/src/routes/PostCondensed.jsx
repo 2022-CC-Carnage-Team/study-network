@@ -16,6 +16,7 @@ import {
   Stack,
   Tooltip,
   useMediaQuery,
+  CardHeader,
 } from "@mui/material";
 
 import { formatDuration } from "../utility";
@@ -35,7 +36,7 @@ const Map = ReactMapboxGl({
     "pk.eyJ1IjoibmxhaGEiLCJhIjoiY2s2YnR3aTViMTVkODNqbGpvcmQ4cXNkNSJ9.tv42gtwJFcNy3sjYxrPopg",
 });
 
-function PostCard(props) {
+function PostCardCondensed(props) {
   const [author, setAuthor] = useState(props.author);
   const [contents, setContents] = useState(props.contents);
   const [likes, setLikes] = useState(props.contents.likes);
@@ -86,113 +87,67 @@ function PostCard(props) {
   }, [props]);
 
   return (
-    <div>
+    <div className="post-card-condensed">
       {deleted == false ? (
         <Card
           key={props.key}
           variant="outlined"
           className="secondary-card top-margin"
         >
-          <CardContent>
-            <Link to={"/post/" + contents.post_id}>
-              <Typography variant="h5" component="h2" className="red-text">
-                Assignment: <b>{contents.title}</b>
-              </Typography>
-            </Link>
-            <Typography variant="h5" component="h2">
-              Class: <b>{contents.class}</b>
-            </Typography>
-            <Typography variant="h6" component="h5">
-              Assignment Description:
-            </Typography>
-            <Typography component="p">{contents.description}</Typography>
-            <Typography variant="h6" component="h5">
-              Assignment Difficulty:
-            </Typography>
-            <Stack
-              spacing={2}
-              direction="row"
-              alignItems="center"
-              sx={{ mt: "0.75rem" }}
-            >
-              <SentimentSatisfiedAltIcon />
-              <LinearProgress
-                className="difficulty-meter"
-                size={40}
-                thickness={4}
-                variant="determinate"
-                value={contents.difficulty}
-                sx={{
-                  maxWidth: "500px",
-                  width: "100%",
-                }}
-              />
-              <SentimentVeryDissatisfiedIcon />
-            </Stack>
-            <Typography variant="h6" component="h5">
-              Assignment Duration:
-            </Typography>
-            <Typography variant="p" component="p">
-              {formatDuration(contents.timeStudying)}
-            </Typography>
-            {contents.coordinates &&
-            contents.coordinates[0] != 0 &&
-            contents.coordinates[1] != 0 &&
-            contents.coordinates[0] != null &&
-            contents.coordinates[1] != null ? (
-              <Paper className="padding-margin map" variant="outlined">
-                <Map
-                  style="mapbox://styles/mapbox/dark-v9"
-                  containerStyle={{
-                    height: "180px",
-                    width: "100%",
-                    borderRadius: "10px",
-                  }}
-                  zoom={[15]}
-                  center={[
-                    props.contents.coordinates[1],
-                    props.contents.coordinates[0],
-                  ]}
-                >
-                  <Marker
-                    coordinates={[
-                      props.contents.coordinates[1],
-                      props.contents.coordinates[0],
-                    ]}
-                    anchor="bottom"
-                  >
-                    <PersonPinIcon className="person-marker" />
-                  </Marker>
-                </Map>
-              </Paper>
-            ) : (
-              <React.Fragment></React.Fragment>
-            )}
-            <Paper className="padding-margin" variant="outlined">
-              {author ? (
-                <Button variant="outlined">
-                  <Stack spacing={4} direction="row" alignItems="center">
-                    <Avatar
-                      alt={author.firstName}
-                      src={author.microsoft.profilePic}
-                      sx={{ m: 1 }}
-                    />
-                    <Tooltip title="View Profile">
-                      <Link
-                        className="no-link-style"
-                        to={`/profile/${author.microsoft.id}`}
-                      >
-                        {author.firstName} {author.lastName}
-                      </Link>
-                    </Tooltip>
-                  </Stack>
-                </Button>
+          <CardHeader
+            sx={{ backgroundColor: "#111111" }}
+            avatar={
+              author ? (
+                <React.Fragment>
+                  <IconButton>
+                    <Link
+                      className="no-link-style"
+                      to={`/profile/${author.microsoft.id}`}
+                    >
+                      <Avatar
+                        alt={author.firstName}
+                        src={author.microsoft.profilePic}
+                      />
+                    </Link>
+                  </IconButton>
+                </React.Fragment>
               ) : (
                 <Typography variant="p" component="p">
                   Unknown User
                 </Typography>
-              )}
-            </Paper>
+              )
+            }
+            title={
+              <Link to={"/post/" + contents.post_id}>
+                <Typography variant="h5" component="h2" className="red-text">
+                  <b>{contents.title}</b>
+                </Typography>
+              </Link>
+            }
+            subheader={
+              <React.Fragment>
+                <b>{contents.class}</b> | {contents.description}
+              </React.Fragment>
+            }
+          ></CardHeader>
+          <CardContent sx={{ pt: 0, pb: 0 }}>
+            <Card sx={{ p: 2 }}>
+              <Stack spacing={2} direction="row" alignItems="center">
+                <SentimentSatisfiedAltIcon />
+                <LinearProgress
+                  className="difficulty-meter"
+                  size={40}
+                  thickness={4}
+                  variant="determinate"
+                  value={contents.difficulty}
+                  sx={{
+                    maxWidth: "500px",
+                    width: "100%",
+                  }}
+                />
+                <SentimentVeryDissatisfiedIcon />
+              </Stack>
+            </Card>
           </CardContent>
           <CardActions>
             <Tooltip title="Like">
@@ -249,4 +204,4 @@ function PostCard(props) {
   );
 }
 
-export default PostCard;
+export default PostCardCondensed;

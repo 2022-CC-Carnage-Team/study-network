@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import HeatMap from "@uiw/react-heat-map";
 import Tooltip from "@uiw/react-tooltip";
 
@@ -21,7 +21,7 @@ function UserHeatmap(props) {
           props.data
             ? props.data.map((item) => {
                 return {
-                  date: item._id.replace("-", "/"),
+                  date: item._id,
                   count: item.totalTime,
                 };
               })

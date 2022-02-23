@@ -46,21 +46,27 @@ function SNAppBar(props) {
             className="site-title"
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1 }}
+            sx={{ flexGrow: 1, m: theme.spacing(5) }}
           >
             <Link to="/" className="no-link-style">
-              {matches ? "Coug Study Network" : "Study Net"}
+              {matches ? "Coug Study Network" : "Coug Study Net"}
             </Link>
           </Typography>
           {props.user ? (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton onClick={handleMenu} sx={{ p: 2 }}>
-                <MenuIcon />
-              </IconButton>
-              <Avatar
-                alt={props.user.firstName}
-                src={props.user.microsoft.profilePic}
-              />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                m: theme.spacing(5),
+              }}
+            >
+              <Button onClick={handleMenu} sx={{ p: 4 }} variant="contained">
+                <MenuIcon sx={{ color: "white", mr: theme.spacing(15) }} />
+                <Avatar
+                  alt={props.user.firstName}
+                  src={props.user.microsoft.profilePic}
+                />
+              </Button>
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}

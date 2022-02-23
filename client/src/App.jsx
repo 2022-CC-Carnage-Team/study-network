@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link, useSearchParams } from "react-router-dom";
+import { Routes, Route, useSearchParams } from "react-router-dom";
 import "./Custom.css";
 
 import { Home } from "./routes/Home";
 import { Profile } from "./routes/Profile";
 import NewPost from "./routes/NewPost";
 
-import {
-  createTheme,
-  ThemeProvider,
-  styled,
-  alpha,
-} from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { SNAppBar } from "./SNAppBar";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { SinglePost } from "./routes/SinglePost";
 
-import InputBase from "@mui/material/InputBase";
+//import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
-import SiteLogo from "./wsusn_logo.svg";
+//import SiteLogo from "./wsusn_logo.svg";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
 
@@ -47,13 +42,7 @@ export const theme = createTheme({
       paper: "#111111",
     },
   },
-  spacing: 8,
-  padding: {
-    default: "1rem",
-  },
-  margin: {
-    default: "1rem",
-  },
+  spacing: 1,
   shape: {
     borderRadius: 10,
   },
@@ -65,11 +54,6 @@ function App() {
   let [searchField, setSearchField] = useState("");
 
   useEffect(() => {
-    if (mobile) {
-      theme.padding = "0.5rem";
-      theme.margin = "0.5rem";
-    }
-
     setSearchField("");
 
     callBackendAPI()
@@ -92,7 +76,6 @@ function App() {
   const mobile = useMediaQuery("(min-width:600px)");
 
   const handleSearch = (q) => {
-    console.log("Searching for: ", q);
     if (q !== "" && q !== null) {
       setSearchParams({ q });
     }
@@ -100,7 +83,6 @@ function App() {
 
   const handleSearchClear = (event) => {
     event.preventDefault();
-    console.log("Clearing search");
     // remove search params
     setSearchParams({});
     setSearchField("");
@@ -111,15 +93,12 @@ function App() {
       <SNAppBar user={user} />
       <div className="App">
         <Container maxWidth="lg">
-          <Paper
-            className="page-container"
-            sx={{ p: "0.1rem", pb: "1rem", pl: "1rem" }}
-          >
+          <Paper sx={{ p: "0.5rem" }}>
             <Stack
               spacing={2}
               direction="row"
               alignItems="center"
-              sx={{ mt: "0.75rem" }}
+              justifyContent={"center"}
             >
               <Tooltip title="Search">
                 <IconButton

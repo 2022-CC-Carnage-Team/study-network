@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import { Paper, Grid, Button, Card, CardContent } from "@mui/material";
+import { Paper, Grid, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
 
 import PostCard from "./Posts";
@@ -34,7 +34,6 @@ function SinglePost(props) {
     }
 
     res = await res.json();
-    console.log(res);
 
     return res;
   };

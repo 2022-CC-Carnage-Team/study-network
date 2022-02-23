@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 
-import Container from "@mui/material/Container";
+//import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { Grid, Button, Pagination } from "@mui/material";
 
-import PostCard from "./Posts";
+import PostCardCondensed from "./PostCondensed";
 
 function PostList(props) {
   let [numPages, setNumPages] = useState(1);
@@ -77,7 +77,7 @@ function PostList(props) {
             className="pagination"
           />
           {props.posts.map((post) => (
-            <PostCard
+            <PostCardCondensed
               owned={props.owned}
               author={post.author}
               contents={post.post}
