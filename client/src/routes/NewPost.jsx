@@ -25,6 +25,7 @@ import {
   InputLabel,
   FormControl,
   Grid,
+  Divider,
 } from "@mui/material";
 
 function NewPost(props) {
@@ -141,7 +142,7 @@ function NewPost(props) {
                   component="form"
                   sx={{
                     "& .MuiTextField-root": {
-                      m: 2,
+                      m: 15,
                       minWidth: "90%",
                       textAlign: "center",
                     },
@@ -188,9 +189,9 @@ function NewPost(props) {
                       onChange={handleDescriptionChange}
                     />
                     <div>
-                      Difficulty: {`${difficulty}%/100%`}
+                      Difficulty: {`${difficulty}%`}
                       <Stack
-                        spacing={2}
+                        spacing={15}
                         direction="row"
                         sx={{ mb: 2, ml: 5, mr: 5 }}
                         alignItems="center"
@@ -203,9 +204,9 @@ function NewPost(props) {
                         />
                         <SentimentVeryDissatisfiedIcon />
                       </Stack>
-                      Time Spent: {formatDuration(timeStudying)}
+                      Time Spent: {formatDuration(timeStudying) || "None"}
                       <Stack
-                        spacing={2}
+                        spacing={15}
                         direction="row"
                         sx={{ mb: 2, ml: 5, mr: 5 }}
                         alignItems="center"
@@ -222,12 +223,14 @@ function NewPost(props) {
                       </Stack>
                     </div>
                   </div>
+                  <Divider sx={{ m: 30 }} />
                   <Grid
                     container
                     direction="row"
                     justifyContent="flex-start"
                     alignItems="stretch"
-                    spacing={3}
+                    spacing={10}
+                    sx={{ mt: 2 }}
                   >
                     <Grid item>
                       <Button variant="contained" onClick={handleSubmit}>
