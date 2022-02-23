@@ -126,7 +126,9 @@ function PostCardCondensed(props) {
             }
             subheader={
               <React.Fragment>
-                <b>{contents.class}</b> | {contents.description}
+                <b>{contents.class}</b> |{" "}
+                {contents.description.substring(0, 200) +
+                  (contents.description.length > 200 ? "..." : "")}
               </React.Fragment>
             }
           ></CardHeader>

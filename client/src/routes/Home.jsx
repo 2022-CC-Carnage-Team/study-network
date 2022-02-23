@@ -20,7 +20,6 @@ function Home() {
   let [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(async () => {
-    console.log(searchParams);
     let res = await callBackendAPI();
     setRecentPosts(res);
 
