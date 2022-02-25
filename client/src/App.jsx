@@ -145,6 +145,11 @@ function App() {
         <p className="copyright">
           Copyright © {new Date().getFullYear()} Team Carnage &{" "}
           <a href="https://nlaha.com">Nathan Laha</a>
+          <br />
+          Contribute on{" "}
+          <a href="https://github.com/2022-CC-Carnage-Team/study-network">
+            GitHub
+          </a>
         </p>
       </footer>
     </ThemeProvider>
